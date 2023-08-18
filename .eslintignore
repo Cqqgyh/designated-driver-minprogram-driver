@@ -1,0 +1,4 @@
+babel.config.js
+src/uni_modules/*
+node_modules/*
+src/tmui/*
