@@ -38,6 +38,7 @@
         <theme-icon custom-prefix="iconfont" type="iconfontditudingwei" size="30"></theme-icon>
       </cover-view>
     </map>
+    <!--    起点-->
     <view v-if="!isArrivePassengerPickUpPoint" class="location-panel">
       <tm-sheet :round="3" :shadow="2">
         <!--        起点-->
@@ -50,7 +51,13 @@
               </view>
             </template>
             <template #right>
-              <uni-icons custom-prefix="iconfont" class="mr-10" type="iconfontditu" size="30"></uni-icons>
+              <uni-icons
+                @click="openExternalMapHandle(takeCarInfo.from)"
+                custom-prefix="iconfont"
+                class="mr-10"
+                type="iconfontditu"
+                size="30"
+              ></uni-icons>
               <uni-icons @click="callPhoneHandle" custom-prefix="iconfont" type="iconfontdianhua" size="30"></uni-icons>
             </template>
           </tm-cell>
@@ -71,6 +78,7 @@
         ></loading-button>
       </tm-sheet>
     </view>
+    <!--    终点-->
     <view v-if="isArrivePassengerPickUpPoint" class="location-panel">
       <tm-sheet :round="3" :shadow="2">
         <!--        终点-->
@@ -83,7 +91,13 @@
               </view>
             </template>
             <template #right>
-              <uni-icons custom-prefix="iconfont" class="mr-10" type="iconfontditu" size="30"></uni-icons>
+              <uni-icons
+                @click="openExternalMapHandle(takeCarInfo.to)"
+                custom-prefix="iconfont"
+                class="mr-10"
+                type="iconfontditu"
+                size="30"
+              ></uni-icons>
               <uni-icons @click="callPhoneHandle" custom-prefix="iconfont" type="iconfontdianhua" size="30"></uni-icons>
             </template>
           </tm-cell>
@@ -145,7 +159,27 @@ function reachTheStartingPointHandle() {
 function reachTheEndingPointHandle() {
   console.log('到达乘客终点-reachTheEndingPointHandle')
 }
-
+//  打开外部地图
+function openExternalMapHandle(params: typeof takeCarInfo.from) {
+  console.log('打开外部地图-openExternalMapHandle')
+  wx.openLocation({
+    ...params,
+    // latitude, //经度
+    // longitude, //维度
+    // name: '自提位置', // 位置名
+    // address: '第十六届可能安防监控', // 要去的地址详情说明
+    scale: 15, // 地图缩放级别,整形值,范围从1~28。默认为最大
+    success: function (data) {
+      console.log(data)
+    },
+    fail(res) {
+      console.log(res) // getLocation:fail the api need to be declared in the requiredPrivateInfos field in app.json
+    },
+    complete() {
+      wx.hideLoading()
+    }
+  })
+}
 //#endregion
 
 onLoad(() => {
