@@ -1,4 +1,6 @@
-// 用于轮询的定时器创建
+/**
+ * @description: 定时器类
+ */
 interface ITimerClass {
   time?: number
   callback?: () => void
