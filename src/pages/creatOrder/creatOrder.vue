@@ -126,6 +126,7 @@ import { useTakeCarInfoStore } from '@/store/modules/takeCarInfo'
 import tmDrawer from '@/tmui/components/tm-drawer/tm-drawer.vue'
 import { useTimeIncrease } from '@/hooks/useTimeIncrease'
 import { driversPickUpPassengersRoutePlanObj, routeInfoObj } from '@/mock/mock'
+import { IRecordCallback, RecorderManagerClass } from '@/class/RecorderManagerClass'
 const map = uni.createMapContext('map')
 const driveMap = uni.createMapContext('driveMap')
 // 打车相关信息仓库
@@ -185,6 +186,14 @@ function openExternalMapHandle(params: typeof takeCarInfo.from) {
 onLoad(() => {
   //   获取当前位置信息
   // takeCarInfo.routePlan()
+  // let recorderManager = new RecorderManagerClass({
+  //   maxDuration: 6,
+  //   recordCallback: (res: IRecordCallback) => {
+  //     console.log('recordCallback', res)
+  //   }
+  // })
+  // recorderManager.startRecord()
+  // console.log('RecorderManagerClass', recorderManager)
 })
 </script>
 
