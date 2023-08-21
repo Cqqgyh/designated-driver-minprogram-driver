@@ -48,6 +48,13 @@
         "navigationBarTitleText": "订单详情"
         //        "navigationBarBackgroundColor": "#E7F0FF"
       }
+    },
+    {
+      "path": "pages/login/login",
+      "style": {
+        "navigationBarTitleText": "登陆"
+        //        "navigationBarBackgroundColor": "#E7F0FF"
+      }
     }
   ],
   //	分包配置
@@ -130,6 +137,10 @@
       {
         "name": "测试页-订单详情",
         "path": "pages/orderDetail/orderDetail"
+      },
+      {
+        "name": "测试页-登陆",
+        "path": "pages/login/login"
       }
     ]
   }
