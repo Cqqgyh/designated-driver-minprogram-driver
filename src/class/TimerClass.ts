@@ -1,6 +1,4 @@
-/**
- * @description: 定时器类
- */
+// 用于轮询的定时器创建
 interface ITimerClass {
   time?: number
   callback?: () => void
@@ -14,7 +12,7 @@ export class TimerClass {
   private readonly callback: () => void
   //   定时器是否正在运行
   private isRunning: boolean
-  constructor(params: ITimerClass) {
+  constructor(params: ITimerClass = {}) {
     this.time = params.time || 3000
     this.callback = params.callback || (() => {})
     this.isRunning = false
@@ -23,6 +21,8 @@ export class TimerClass {
     if (this.isRunning) {
       return
     }
+    // 立即执行一次
+    this.callback()
     this.isRunning = true
     this.timer = setInterval(() => {
       this.callback()
