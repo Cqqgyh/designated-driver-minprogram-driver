@@ -20,7 +20,7 @@ service.interceptors.request.use(
     }
     // 演示custom 用处
     // if (config.custom.auth) {
-    //   config.header.token = 'token'
+    config.header.token = 'a7e5a948b8794ca7936e6cc5203e0dec'
     // }
     // if (config.custom.loading) {
     //  uni.showLoading()
