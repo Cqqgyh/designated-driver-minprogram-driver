@@ -3,6 +3,7 @@
 </template>
 <script setup lang="ts">
 import { PropType } from 'vue'
+const attrs = useAttrs()
 type buttonType = 'primary' | 'success' | 'warning' | 'danger' | 'info'
 const props = defineProps({
   clickFun: {
@@ -16,6 +17,9 @@ const props = defineProps({
 })
 const loading = ref(false)
 const color = computed(() => {
+  if (attrs.color) {
+    return attrs.color as string
+  }
   const typeColorList = [
     {
       type: 'primary',
