@@ -1,5 +1,5 @@
 import { useTmpiniaStore } from '@/tmui/tool/lib/tmpinia'
-
+import { useTabBarStore } from '@/store/modules/tabBarNav'
 export const useTheme = () => {
   const tmPiniaStore = useTmpiniaStore()
   /**
@@ -20,6 +20,8 @@ export const useTheme = () => {
       })
     }
     tmPiniaStore.setTmVuetifyAddTheme(`name-${color}`, color)
+    //   更新导航颜色
+    useTabBarStore()?.updateActiveNavActiveColor()
   }
   /**
    * @description: 通过颜色主题名称切换主题颜色

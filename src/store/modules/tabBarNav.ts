@@ -35,6 +35,12 @@ export const useTabBarStore = defineStore({
   actions: {
     setActiveNavIndex(index: number) {
       this.activeNavIndex = index
+    },
+    //   更新主题色
+    updateActiveNavActiveColor() {
+      this.tabBarNavList.forEach((item) => {
+        item.activeColor = getActiveColor()
+      })
     }
   }
 })
