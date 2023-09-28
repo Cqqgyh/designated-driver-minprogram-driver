@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getRedirectUrl, removeRedirectUrl, removeToken, removeUser, setUser } from '@/utils/storage'
+import { getRedirectUrl, removeRedirectUrl, removeToken, removeUser, setToken, setUser } from '@/utils/storage'
 import { getLogin, getUserInfo, updateUserInfo } from '@/api/user'
 import { TOKEN_KEY } from '@/config/constant'
 import { UpdateUserInfoInterface, UserInfoInterface } from '@/api/user/types'
@@ -9,24 +9,27 @@ export const useUserStore = defineStore({
   id: 'app-user',
   state: () => ({
     token: '',
-    user: { token: '123' } as any
+    user: {} as UserInfoInterface
   }),
   actions: {
     // 微信登陆
-    loginWithWechat() {
+    loginWithWechat(callback?: () => any) {
       uni.login({
         provider: 'weixin',
         success: async (loginRes: { code: string }) => {
           await this.getToken(loginRes.code)
           // 登录成功，获取用户信息
           await this.getUserInfo()
-          const redirectUrl = getRedirectUrl()
-          console.log('redirectUrl', redirectUrl)
-          uni.redirectTo({
-            url: redirectUrl ? redirectUrl : '/pages/index/index'
-          })
-          // 清空重定向url
-          removeRedirectUrl()
+          // 如果没有绑定手机号，跳转到绑定手机号页面
+          // if (callback && !this.user.isBindPhone) {
+          //   await callback()
+          // } else {
+          this.goHome()
+          // }
+          // const redirectUrl = getRedirectUrl()
+
+          // // 清空重定向url
+          // removeRedirectUrl()
         },
         fail: (err: any) => {
           console.log(err)
@@ -35,62 +38,59 @@ export const useUserStore = defineStore({
     },
     // 获取token
     async getToken(code: string) {
-      try {
-        const res = await getLogin(code)
-        if (res.data.token) {
-          // 本地保存token
-          uni.setStorageSync(TOKEN_KEY, res.data.token)
-          this.token = res.data.token
-        }
-      } catch (error) {
-        console.log(error)
+      const res = await getLogin(code)
+      if (res.data) {
+        // 本地保存token
+        setToken(res.data)
+        // uni.setStorageSync(TOKEN_KEY, res.data.token)
+        this.token = res.data
       }
     },
     // 获取用户信息
     async getUserInfo() {
-      try {
-        const res = await getUserInfo()
-        // 如果用户信息不存在的,从微信获取用户信息
-        if (!res.data.nickname || !res.data.avatarUrl) {
-          uni.getUserInfo({
-            provider: 'weixin',
-            success: async (infoRes: GetUserInfoRes) => {
-              const params = {
-                avatarUrl: infoRes.userInfo.avatarUrl,
-                nickname: infoRes.userInfo.nickName
-              }
-              // 在这里可以将用户信息传递给后端进行登录验证等操作
-              // 更新用户信息
-              await this.updateUserInfo(params)
-              // 重新请求当前用户信息
-              await this.getUserInfo()
+      const res = await getUserInfo()
+      // 如果用户信息不存在的,从微信获取用户信息
+      if (!res.data.nickname || !res.data.avatarUrl) {
+        uni.getUserInfo({
+          provider: 'weixin',
+          success: async (infoRes: GetUserInfoRes) => {
+            const params = {
+              avatarUrl: infoRes.userInfo.avatarUrl,
+              nickname: infoRes.userInfo.nickName
             }
-          })
-        } else {
-          this.user = res.data
-          setUser(JSON.stringify(res.data))
-        }
-      } catch (error) {
-        console.log(error)
+            // 在这里可以将用户信息传递给后端进行登录验证等操作
+            // 更新用户信息
+            await this.updateUserInfo(params)
+            // 重新请求当前用户信息
+            await this.getUserInfo()
+          }
+        })
+      } else {
+        this.user = res.data
+        setUser(res.data)
       }
     },
     // 更新用户信息
     async updateUserInfo(userInfo: UpdateUserInfoInterface) {
-      try {
-        const res = await updateUserInfo(userInfo)
-      } catch (error) {
-        console.log(error)
-      }
+      const res = await updateUserInfo(userInfo)
     },
     // 退出登陆
     logout() {
+      this.clearAllOfUser()
+      // 回到首页
+      this.goHome()
+    },
+    // 清空用户所有信息
+    clearAllOfUser() {
       removeToken()
       removeUser()
       // uni.clearStorageSync()  // 清空所有缓存 可能有些缓存不需要清理，先留着，以后看情况再说
       this.user = {} as UserInfoInterface
       this.token = ''
-      // 回到首页
-      uni.navigateTo({
+    },
+    //   去首页
+    goHome() {
+      uni.switchTab({
         url: '/pages/index/index'
       })
     }

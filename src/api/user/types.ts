@@ -1,21 +1,38 @@
 // 从后台获取用户信息接口
+import { AuthStatus, Gender } from '@/config/constEnums'
+
 export interface UserInfoInterface {
-  id: number
+  isArchiveFace: boolean
+  authStatus: AuthStatus
   wxOpenId: string
   nickname: string
+  gender: Gender
   avatarUrl: string
-  isVip: number
-  vipExpireTime: string
-}
-// 后台微信登陆接口
-export interface LoginResponseInterface {
-  token: string
-  refreshToken?: string
 }
 // 更新用户信息接口
 export interface UpdateUserInfoInterface {
-  avatarUrl?: string
   nickname?: string
+  avatarUrl?: string
+  phone?: string
+  name?: string
+  gender?: Gender
+  birthday?: string
+  idcardNo?: string
+  idcardAddress?: string
+  idcardExpire?: string
+  idcardFrontUrl?: string
+  idcardBackUrl?: string
+  idcardHandUrl?: string
+  driverLicenseClazz?: string
+  driverLicenseNo?: string
+  driverLicenseExpire?: string
+  driverLicenseIssueDate?: string
+  driverLicenseFrontUrl?: string
+  driverLicenseBackUrl?: string
+  driverLicenseHandUrl?: string
+  contactName?: string
+  contactPhone?: string
+  contactRelationship?: string
 }
 // 微信登陆返回信息接口
 export interface WxLoginResponseInterface {
@@ -30,4 +47,8 @@ export interface WechatUserInfoInterface {
   language: string
   nickName: string
   province: string
+}
+// 更新微信用户手机号
+export interface WxUpdatePhoneInterface {
+  code: string
 }
