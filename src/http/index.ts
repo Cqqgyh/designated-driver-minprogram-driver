@@ -1,5 +1,7 @@
 import Request, { HttpRequestConfig } from 'luch-request'
 import { ResultData, ResultEnum } from '@/http/type'
+import { getToken } from '@/utils/storage'
+import { useUserStore } from '@/store/modules/user'
 
 const service = new Request()
 // 全局配置
@@ -20,7 +22,7 @@ service.interceptors.request.use(
     }
     // 演示custom 用处
     // if (config.custom.auth) {
-    config.header.token = 'a7e5a948b8794ca7936e6cc5203e0dec'
+    config.header.token = getToken()
     // }
     // if (config.custom.loading) {
     //  uni.showLoading()
@@ -54,12 +56,23 @@ service.interceptors.response.use(
     // }
     // * 登陆失效
     if (ResultEnum.EXPIRE.includes(data.code)) {
-      // RESEETSTORE()
-      uni.showToast({
-        title: data.message || ResultEnum.ERRMESSAGE,
-        icon: 'error'
+      // 清空仓库
+      useUserStore()?.$reset()
+      uni.showModal({
+        title: '提示',
+        content: '登录过期，请重新登录',
+        success: function (res) {
+          if (res.confirm) {
+            // 清空缓存
+            uni.clearStorageSync()
+            uni.redirectTo({
+              url: '/pages/login/login'
+            })
+          } else if (res.cancel) {
+            console.log('用户不想登陆')
+          }
+        }
       })
-      // router.replace(LOGIN_URL)
       return Promise.reject(data)
     }
     // * 请求失败
@@ -78,7 +91,7 @@ service.interceptors.response.use(
     const status = response?.statusCode
     // 处理 HTTP 网络错误
     let message = ''
-    console.log(response)
+    console.log('response', response)
     switch (status) {
       case 401:
         message = 'token 失效，请重新登录'
