@@ -13,6 +13,7 @@ export class TimerClass {
   //   定时器是否正在运行
   private isRunning: boolean
   constructor(params: ITimerClass = {}) {
+    console.log('params', params)
     this.time = params.time || 3000
     this.callback = params.callback || (() => {})
     this.isRunning = false

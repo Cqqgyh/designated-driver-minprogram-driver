@@ -14,6 +14,7 @@ interface ICountdown {
  * @param param
  */
 export const useCountdown = (param?: ICountdown) => {
+  const originalParam = param || {}
   const hours = ref(param?.hours || 0)
   const minutes = ref(param?.minutes || 0)
   const seconds = ref(param?.seconds || 0)
@@ -54,9 +55,9 @@ export const useCountdown = (param?: ICountdown) => {
     clearInterval(timer.value)
   }
   const reset = () => {
-    hours.value = 0
-    minutes.value = 0
-    seconds.value = 0
+    hours.value = originalParam.hours || 0
+    minutes.value = originalParam.minutes || 0
+    seconds.value = originalParam.seconds || 0
   }
   // 终止定时器，且重置时间
   const stopAndReset = () => {
