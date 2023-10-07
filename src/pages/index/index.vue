@@ -44,28 +44,48 @@
         ></loading-button>
       </tm-sheet>
     </view>
-    <tm-drawer :width="300" :height="500" :hideHeader="true" :overlayClick="false" ref="popRef" placement="bottom">
-      <view class="pop-content">
-        <view class="text-weight-b text-size-g">距离客人约4.6KM</view>
-        <view class="my-10 text-size-g">
-          {{
-            `${timeCountdown.timeDateTypeInfo.value.hours}:${timeCountdown.timeDateTypeInfo.value.minutes}:${timeCountdown.timeDateTypeInfo.value.seconds}`
-          }}
+    <tm-notification :transprent="true" :duration="50000" placement="top" ref="popRef">
+      <tm-sheet :round="3" :shadow="2">
+        <view class="pop-content">
+          <view class="address">
+            <view class="address-item">
+              <view class="text-weight-b text-size-g">
+                出发地:
+                <text class="text-weight-s">{{ receiveOrder?.currentOrder.startLocation }}</text>
+              </view>
+            </view>
+            <view class="address-item">
+              <view class="text-weight-b text-size-g">
+                目的地:
+                <text class="text-weight-s">{{ receiveOrder?.currentOrder.endLocation }}</text>
+              </view>
+            </view>
+            <view v-for="item in descriptionsOrder" :key="item.label" class="flex flex-row" style="height: 80rpx">
+              <view class="flex-1 flex flex-col-center-center border-l-2 border-t-2 border-b-2">{{ item.label }}</view>
+              <view class="flex-1 flex-col-center-center border-l-2 border-r-2 border-t-2 border-b-2">{{ item.value }}</view>
+            </view>
+          </view>
+          <view class="text-weight-b text-size-g"></view>
+          <view class="my-10 text-size-g">
+            {{
+              `${timeCountdown.timeDateTypeInfo.value.hours}:${timeCountdown.timeDateTypeInfo.value.minutes}:${timeCountdown.timeDateTypeInfo.value.seconds}`
+            }}
+          </view>
+          <view class="flex flex-row">
+            <loading-button
+              :width="200"
+              :click-fun="cancelTakingOrdersForCustomerHandle"
+              :margin="[30]"
+              :shadow="0"
+              size="large"
+              label="取消"
+              type="info"
+            ></loading-button>
+            <loading-button :width="200" :click-fun="confirmTakingOrdersHandle" :margin="[30]" :shadow="0" size="large" label="抢单"></loading-button>
+          </view>
         </view>
-        <view class="flex flex-row">
-          <loading-button
-            :width="200"
-            :click-fun="cancelTakingOrdersForCustomerHandle"
-            :margin="[30]"
-            :shadow="0"
-            size="large"
-            label="取消"
-            type="info"
-          ></loading-button>
-          <loading-button :width="200" :click-fun="confirmTakingOrdersHandle" :margin="[30]" :shadow="0" size="large" label="接单"></loading-button>
-        </view>
-      </view>
-    </tm-drawer>
+      </tm-sheet>
+    </tm-notification>
     <tabbar-nav></tabbar-nav>
   </tm-app>
 </template>
@@ -73,8 +93,17 @@
 import { IMapProps } from '@/api/index/types'
 import { useTakeCarInfoStore } from '@/store/modules/takeCarInfo'
 import { useTimeIncrease } from '@/hooks/useTimeIncrease'
-import tmDrawer from '@/tmui/components/tm-drawer/tm-drawer.vue'
 import { useCountdown } from '@/hooks/useCountdown'
+import tmNotification from '@/tmui/components/tm-notification/tm-notification.vue'
+import { useReceiveOrder } from '@/store/modules/receiveOrder'
+const receiveOrder = useReceiveOrder()
+const descriptionsOrder = computed(() => {
+  return [
+    { label: '预估里程', value: receiveOrder?.currentOrder.expectDistance + 'KM' },
+    { label: '距离客人距离', value: receiveOrder?.currentOrder.distance + 'KM' },
+    { label: '预估费用', value: receiveOrder?.currentOrder.expectAmount + '元' }
+  ]
+})
 //#region <map相关>
 const map = uni.createMapContext('map')
 // 打车相关信息仓库
@@ -85,7 +114,6 @@ const mapProps = ref<Pick<IMapProps, 'longitude' | 'latitude'>>({
   // 中心纬度
   latitude: 39.908675
 })
-
 //  回到初始位置
 function moveToLocationHandle() {
   map.moveToLocation(mapProps.value)
@@ -96,11 +124,11 @@ function moveToLocationHandle() {
 
 //#region <弹出层>
 // 打开弹出层
-const popRef = ref<InstanceType<typeof tmDrawer>>()
+const popRef = ref<InstanceType<typeof tmNotification> | null>(null)
 // 接单倒计时
 const timeCountdown = useCountdown({
   // 倒计时长
-  seconds: 10,
+  seconds: 5,
   // 回调函数,到达持续时长后执行
   callback: () => {
     console.log('倒计时结束')
@@ -108,17 +136,22 @@ const timeCountdown = useCountdown({
   }
 })
 function openPopupHandle() {
-  popRef.value?.open()
+  popRef.value?.show()
+  timeCountdown.start()
   console.log('打开弹出层openPopupHandle')
 }
 // 关闭弹出层
 function closePopupHandle() {
-  popRef.value?.close()
+  popRef.value?.hide()
+  timeCountdown.stopAndReset()
   console.log('关闭弹出层closePopupHandle')
 }
-// 确认接单
-function confirmTakingOrdersHandle() {
-  console.log('确认接单confirmTakingOrdersHandle')
+// 抢单
+async function confirmTakingOrdersHandle() {
+  console.log('确认抢单confirmTakingOrdersHandle')
+  await receiveOrder.grabOrder()
+  await receiveOrder.stopOrderService()
+  await cancelTakingOrdersHandle()
 }
 // 取消接单
 function cancelTakingOrdersForCustomerHandle() {
@@ -128,7 +161,6 @@ function cancelTakingOrdersForCustomerHandle() {
 // 接收到推送订单
 function receivePushOrderHandle() {
   openPopupHandle()
-  timeCountdown.start()
 }
 //#endregion
 
@@ -138,25 +170,36 @@ const timeIncrease = useTimeIncrease()
 // 接单标识,是否接单
 const isTakingOrders = ref(false)
 // 开始接单
-function startTakingOrdersHandle() {
+async function startTakingOrdersHandle() {
   console.log('开始接单startTakingOrdersHandle')
   isTakingOrders.value = true
   timeIncrease.start()
+  // 开启接单服务
+  await receiveOrder.startOrderService()
+  // 轮询获取新订单
+  await receiveOrder.queryGetNewOrder()
+  // 轮询切换当前订单
+  await receiveOrder.querySwitchCurrentOrder(receivePushOrderHandle)
 }
 // 取消接单
-function cancelTakingOrdersHandle() {
+async function cancelTakingOrdersHandle() {
   console.log('取消订单cancelOrderHandle')
   isTakingOrders.value = false
   timeIncrease.stopAndReset()
+  // 停止轮询新订单
+  receiveOrder.stopQueryGetNewOrder()
+  // 停止轮询切换当前订单
+  receiveOrder.stopQuerySwitchCurrentOrder()
+  //   隐藏
+  closePopupHandle()
 }
 //#endregion
 
-onShow(() => {
-  setTimeout(() => {
-    receivePushOrderHandle()
-  }, 1000)
-})
+onShow(() => {})
 onLoad(() => {
+  // setTimeout(() => {
+  //   receivePushOrderHandle()
+  // }, 1000)
   //   获取当前位置信息
   uni.getLocation({
     type: 'gcj02',
@@ -191,7 +234,13 @@ onLoad(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 30rpx 20rpx 10rpx;
-  height: 400rpx;
+  padding: 15rpx 10rpx 10rpx 10rpx;
+  //height: 200rpx;
+  .address {
+    width: 100%;
+    .address-item {
+      margin-bottom: 5rpx;
+    }
+  }
 }
 </style>
