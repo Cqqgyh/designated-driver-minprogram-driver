@@ -5,9 +5,9 @@ import endImgUrl from '@/static/images/end.png'
 import carImgUrl from '@/static/images/car.png'
 import driver from '@/static/images/driver.png'
 import { TimerClass } from '@/class/TimerClass'
-import { IDriverInfo, IMarkersItem, IPolylineItem } from '@/api/order/types'
+import { IDriverInfo, IMarkersItem, IOrderStatusCallback, IPolylineItem } from '@/api/order/types'
 import { OrderStatus } from '@/config/constEnums'
-import { getExpectOrder } from '@/api/order'
+import { getExpectOrder, getOrderStatus, updateLocationCacheToEnd, updateLocationCacheToStart } from '@/api/order'
 function formatPolyline(polyline: any[]) {
   const coors = polyline
   const pl = []
@@ -111,7 +111,7 @@ export const useTakeCarInfoStore = defineStore({
     },
     // 重置订单相关信息
     resetOrderInfo() {
-      // this.stopQueryOrderStatus()
+      this.stopQueryOrderStatus()
       this.orderInfo = {
         timer: null,
         orderId: 0,
@@ -185,7 +185,6 @@ export const useTakeCarInfoStore = defineStore({
       }
       // 从后台获取路径规划信息
       const res = await getExpectOrder(params)
-      console.log('res', res)
       const route = res.data
       const duration = route.duration
       const distance = route.distance
@@ -200,18 +199,6 @@ export const useTakeCarInfoStore = defineStore({
       const markers = [
         {
           id: 1,
-          latitude: from.latitude,
-          longitude: from.longitude,
-          width: 25,
-          height: 35,
-          anchor: {
-            x: 0.5,
-            y: 0.5
-          },
-          iconPath: type === 1 ? startImgUrl : carImgUrl
-        },
-        {
-          id: 2,
           latitude: to.latitude,
           longitude: to.longitude,
           width: 25,
@@ -221,6 +208,18 @@ export const useTakeCarInfoStore = defineStore({
             y: 0.5
           },
           iconPath: endImgUrl
+        },
+        {
+          id: 2,
+          latitude: from.latitude,
+          longitude: from.longitude,
+          width: 25,
+          height: 35,
+          anchor: {
+            x: 0.5,
+            y: 0.5
+          },
+          iconPath: type === 1 ? startImgUrl : carImgUrl
         }
       ]
       this.setRouteInfo({
@@ -290,6 +289,147 @@ export const useTakeCarInfoStore = defineStore({
     setCarTo(to: typeof this.carInfo.to) {
       this.carInfo.to = to
     },
+    // 上传位置，更新当前位置 type 0:根据订单状态自动判断type为1还是2 1:司机位置->出发地  2:司机位置->目的地 不传递
+    async updateLocation(type: 0 | 1 | 2 = 0) {
+      if (type === 0) {
+        this.orderInfo.orderStatus === OrderStatus.ACCEPTED ? (type = 1) : (type = 2)
+      }
+      console.log('更新位置--------updateLocation------1:司机位置->出发地  2:司机位置->目的地', type)
+      //   更新位置
+      uni.getLocation({
+        type: 'gcj02',
+        success: (res) => {
+          if (type === 1) {
+            updateLocationCacheToStart({
+              // longitude: res.longitude,
+              // latitude: res.latitude
+              // todo 地址位置写死：昌平区政府
+              longitude: 116.23128,
+              latitude: 40.22077
+            })
+            // 设置车辆位置
+            this.setCarFrom({
+              address: '',
+              longitude: 116.23128,
+              latitude: 40.22077
+            })
+            //  路径规划
+            this.driversPickUpPassengersRoutePlan()
+          } else {
+            updateLocationCacheToEnd({
+              // longitude: res.longitude,
+              // latitude: res.latitude
+              // todo 地址位置写死：昌平区政府
+              longitude: 116.23128,
+              latitude: 40.22077
+            })
+            // 设置车辆位置
+            this.setFrom({
+              address: '',
+              longitude: 116.23128,
+              latitude: 40.22077
+            })
+            //  路径规划
+            this.routePlan(2)
+          }
+        }
+      })
+      // 上传位置
+      // await updateOrderLocation(params)
+    },
+    // 查询订单状态
+    async getOrderStatusHandle() {
+      const res = await getOrderStatus(this.orderInfo.orderId)
+      //   设置订单状态
+      this.setOrderStatus(res.data)
+    },
+    // 轮询查询订单状态
+    async queryOrderStatus(settingCallback: IOrderStatusCallback = {}) {
+      if (this.orderInfo.timer) return
+      this.stopQueryOrderStatus()
+      this.orderInfo.timer = new TimerClass({
+        time: 3000,
+        callback: async () => {
+          await this.getOrderStatusHandle()
+          await this.updateLocation()
+          switch (this.orderInfo.orderStatus) {
+            case OrderStatus.WAITING_ACCEPT:
+              console.log('OrderStatus.WAITING_ACCEPT')
+              if (settingCallback.WAITING_ACCEPT) {
+                settingCallback.WAITING_ACCEPT()
+                delete settingCallback.WAITING_ACCEPT
+              }
+              break
+            case OrderStatus.ACCEPTED:
+              // 司乘同显
+              console.log('OrderStatus.ACCEPTED')
+              if (settingCallback.ACCEPTED) {
+                settingCallback.ACCEPTED()
+                delete settingCallback.ACCEPTED
+              }
+              break
+            case OrderStatus.DRIVER_ARRIVED:
+              console.log('OrderStatus.DRIVER_ARRIVED')
+              if (settingCallback.DRIVER_ARRIVED) {
+                settingCallback.DRIVER_ARRIVED()
+                delete settingCallback.DRIVER_ARRIVED
+              }
+              break
+            case OrderStatus.UPDATE_CART_INFO:
+              console.log('OrderStatus.UPDATE_CART_INFO')
+              if (settingCallback.UPDATE_CART_INFO) {
+                settingCallback.UPDATE_CART_INFO()
+                delete settingCallback.UPDATE_CART_INFO
+              }
+              break
+            case OrderStatus.START_SERVICE:
+              console.log('OrderStatus.START_SERVICE', settingCallback.START_SERVICE)
+              if (settingCallback.START_SERVICE) {
+                settingCallback.START_SERVICE()
+                delete settingCallback.START_SERVICE
+              }
+              break
+            case OrderStatus.END_SERVICE:
+              console.log('OrderStatus.END_SERVICE')
+              if (settingCallback.END_SERVICE) {
+                settingCallback.END_SERVICE()
+                delete settingCallback.END_SERVICE
+              }
+              break
+            case OrderStatus.UNPAID:
+              console.log('OrderStatus.UNPAID')
+              if (settingCallback.UNPAID) {
+                settingCallback.UNPAID()
+                delete settingCallback.UNPAID
+              }
+              break
+            case OrderStatus.PAID:
+              console.log('OrderStatus.PAID')
+              if (settingCallback.PAID) {
+                settingCallback.PAID()
+                delete settingCallback.PAID
+              }
+              break
+            case OrderStatus.CANCEL_ORDER:
+              console.log('OrderStatus.CANCEL_ORDER')
+              if (settingCallback.CANCEL_ORDER) {
+                settingCallback.CANCEL_ORDER()
+                delete settingCallback.CANCEL_ORDER
+              }
+              break
+            default:
+              console.log('default')
+          }
+        }
+      })
+      //   启动轮询
+      this.orderInfo.timer.start()
+    },
+    stopQueryOrderStatus() {
+      console.log('停止轮询订单状态--------stopQueryOrderStatus')
+      this.orderInfo.timer?.stop()
+      this.orderInfo.timer = null
+    },
     //   规划司机接乘客路径CarInfo
     async driversPickUpPassengersRoutePlan() {
       const from = this.carInfo.from
@@ -302,7 +442,6 @@ export const useTakeCarInfoStore = defineStore({
       }
       // 从后台获取路径规划信息
       const res = await getExpectOrder(params)
-      console.log('res', res)
       const route = res.data
       const duration = route.duration
       const distance = route.distance
@@ -317,18 +456,6 @@ export const useTakeCarInfoStore = defineStore({
       const markers = [
         {
           id: 1,
-          latitude: from.latitude,
-          longitude: from.longitude,
-          width: 25,
-          height: 35,
-          anchor: {
-            x: 0.5,
-            y: 0.5
-          },
-          iconPath: driver
-        },
-        {
-          id: 2,
           latitude: to.latitude,
           longitude: to.longitude,
           width: 25,
@@ -338,6 +465,18 @@ export const useTakeCarInfoStore = defineStore({
             y: 0.5
           },
           iconPath: endImgUrl
+        },
+        {
+          id: 2,
+          latitude: from.latitude,
+          longitude: from.longitude,
+          width: 25,
+          height: 35,
+          anchor: {
+            x: 0.5,
+            y: 0.5
+          },
+          iconPath: driver
         }
       ]
       this.setCarRouteInfo({

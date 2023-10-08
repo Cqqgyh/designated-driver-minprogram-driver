@@ -1,5 +1,6 @@
 import http from '@/http'
 import { ICurrentLocation, IDrivingLineVo, IOrder, IOrderDetail, IQueryParams } from '@/api/order/types'
+import { OrderStatus } from '@/config/constEnums'
 /**
  * 开始接单服务
  */
@@ -49,4 +50,25 @@ export function getExpectOrder(params: IQueryParams) {
  */
 export function getOrderDetail(orderId: number | string) {
   return http.get<IOrderDetail>(`/order/getOrderInfo/${orderId}`)
+}
+
+/**
+ * 司机赶往代驾起始点：更新订单地址到缓存 : 接单位置->出发地 更新位置
+ */
+export function updateLocationCacheToStart(params: ICurrentLocation) {
+  return http.post('/location/updateOrderLocationToCache', params)
+}
+
+/**
+ * 开始代驾服务：保存代驾服务订单位置 : 出发地->目的地 更新位置
+ */
+export function updateLocationCacheToEnd(params: ICurrentLocation) {
+  return http.post('/location/saveOrderServiceLocation', [params])
+}
+/**
+ * @description 查询订单状态
+ * @param orderId
+ */
+export function getOrderStatus(orderId: number) {
+  return http.get<OrderStatus>(`/order/getOrderStatus/${orderId}`)
 }
