@@ -233,12 +233,65 @@ async function getOrderInfoHandleByOrderId(orderId: number | string) {
     await takeCarInfo.routePlan(2)
   }
 }
+// 订单轮询所需参数
+const queryOrderStatusParams = {
+  WAITING_ACCEPT: () => {
+    console.log('等待接单')
+  },
+  // 接单成功
+  ACCEPTED: async () => {
+    console.log('接单成功')
+    //   更新地图位置
+  },
+  // 司机到达代驾位置
+  DRIVER_ARRIVED: async () => {
+    console.log('司机已到达')
+  },
+  // 更新车辆信息
+  UPDATE_CART_INFO: () => {
+    console.log('更新车辆信息')
+  },
+  // 开始服务
+  START_SERVICE: () => {
+    console.log('开始服务')
+  },
+  // 结束服务
+  END_SERVICE: () => {
+    console.log('结束服务')
+  },
+  //  代付款
+  UNPAID: () => {
+    // 结束账单状态轮询
+    takeCarInfo.stopQueryOrderStatus()
+    // // 跳转到订单详情页面
+    // uni.redirectTo({
+    //   url: `/pages/orderDetail/orderDetail?orderId=${takeCarInfo.orderInfo.orderId}`
+    // })
+    // // 清空订单信息
+    // takeCarInfo.$reset()
+    // console.log('takeCarInfo', takeCarInfo)
+    console.log('代付款')
+  },
+  // 已付款
+  PAID: () => {
+    console.log('已付款')
+  },
+  // 取消订单
+  CANCEL_ORDER: () => {
+    console.log('取消订单')
+  }
+}
+// 订单状态轮询
+async function queryOrderStatusHandle() {
+  await takeCarInfo.queryOrderStatus({ ...queryOrderStatusParams })
+}
 // 根据订单id 重载页面
 async function reloadPageHandleByOrderId(orderId: number | string) {
   //  清空订单信息
   takeCarInfo.$reset()
   //   重新获取订单信息
   await getOrderInfoHandleByOrderId(orderId)
+  await queryOrderStatusHandle()
 }
 //#endregion
 
