@@ -1,5 +1,5 @@
 import http from '@/http'
-import { ICurrentLocation, IOrder } from '@/api/order/types'
+import { ICurrentLocation, IDrivingLineVo, IOrder, IOrderDetail, IQueryParams } from '@/api/order/types'
 /**
  * 开始接单服务
  */
@@ -35,4 +35,18 @@ export function grabOrder(orderId: number | string) {
  */
 export function getNewOrder() {
   return http.get<IOrder[]>('/order/findNewOrderQueueData')
+}
+/**
+ * @description 预估订单数据（预估路线）
+ * @param params
+ */
+export function getExpectOrder(params: IQueryParams) {
+  return http.post<IDrivingLineVo>('/order/calculateDrivingLine', params)
+}
+/**
+ * @description 获取订单详情
+ * @param orderId
+ */
+export function getOrderDetail(orderId: number | string) {
+  return http.get<IOrderDetail>(`/order/getOrderInfo/${orderId}`)
 }
