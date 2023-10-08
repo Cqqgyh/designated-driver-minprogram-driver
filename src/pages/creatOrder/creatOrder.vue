@@ -3,6 +3,7 @@
     <!--    出发地到目的地地图-->
     <map
       v-show="isArrivePassengerPickUpPoint"
+      :key="1"
       id="map"
       class="map"
       :longitude="takeCarInfo.from.longitude"
@@ -22,12 +23,13 @@
     <!--    司机到乘客路线地图-->
     <map
       v-show="!isArrivePassengerPickUpPoint"
+      :key="2"
       id="driveMap"
       class="map"
-      :longitude="driversPickUpPassengersRoutePlan.from.longitude"
-      :latitude="driversPickUpPassengersRoutePlan.from.latitude"
-      :polyline="driversPickUpPassengersRoutePlan.RouteInfo.polyline"
-      :markers="driversPickUpPassengersRoutePlan.RouteInfo.markers"
+      :longitude="takeCarInfo.carInfo.from.longitude"
+      :latitude="takeCarInfo.carInfo.from.latitude"
+      :polyline="takeCarInfo.carInfo.RouteInfo.polyline"
+      :markers="takeCarInfo.carInfo.RouteInfo.markers"
       scale="12"
       :enable-traffic="false"
       :show-location="true"
@@ -108,16 +110,16 @@
             <template #right></template>
           </tm-cell>
         </view>
-        <loading-button :block="true" :click-fun="() => {}" :margin="[10]" :shadow="0" size="large" label="到达乘客终点"></loading-button>
+        <loading-button
+          :block="true"
+          :click-fun="reachTheEndingPointHandle"
+          :margin="[10]"
+          :shadow="0"
+          size="large"
+          label="到达乘客终点"
+        ></loading-button>
       </tm-sheet>
     </view>
-    <tm-drawer :width="300" :height="700" :hideHeader="true" :overlayClick="false" ref="popRef" placement="bottom">
-      <view class="pop-content">
-        <view class="text-weight-b text-size-g">请耐心等待司机接单</view>
-        <view class="text-grey text-weight-b text-size-n my-5">5分钟内暂无司机接单将自动取消订单</view>
-        <loading-button :width="500" :click-fun="() => {}" :margin="[10]" :shadow="0" size="large" label="取消接单"></loading-button>
-      </view>
-    </tm-drawer>
   </tm-app>
 </template>
 <script setup lang="ts">
@@ -125,20 +127,25 @@ import { ref } from 'vue'
 import { useTakeCarInfoStore } from '@/store/modules/takeCarInfo'
 import tmDrawer from '@/tmui/components/tm-drawer/tm-drawer.vue'
 import { useTimeIncrease } from '@/hooks/useTimeIncrease'
-import { driversPickUpPassengersRoutePlanObj, routeInfoObj } from '@/mock/mock'
 import { IRecordCallback, RecorderManagerClass } from '@/class/RecorderManagerClass'
+import { getOrderDetail } from '@/api/order'
+import { OrderStatus } from '@/config/constEnums'
 const map = uni.createMapContext('map')
 const driveMap = uni.createMapContext('driveMap')
+const props = defineProps({
+  // 订单id
+  orderId: {
+    type: Number || String,
+    default: true
+  }
+})
 // 打车相关信息仓库
-// const takeCarInfo = useTakeCarInfoStore()
-// 是否到达乘客上车点
-const takeCarInfo = routeInfoObj
-const driversPickUpPassengersRoutePlan = driversPickUpPassengersRoutePlanObj
+const takeCarInfo = useTakeCarInfoStore()
 
 // 回到当前位置
 function moveCurrentHandle() {
   map.moveToLocation(takeCarInfo.from)
-  driveMap.moveToLocation(driversPickUpPassengersRoutePlan.from)
+  driveMap.moveToLocation(takeCarInfo.from)
 }
 // 打电话
 function callPhoneHandle() {
@@ -183,7 +190,67 @@ function openExternalMapHandle(params: typeof takeCarInfo.from) {
 }
 //#endregion
 
+//#region <获取订单信息>
+// 根据订单id获取订单信息
+async function getOrderInfoHandleByOrderId(orderId: number | string) {
+  const res = await getOrderDetail(orderId)
+  //   更新司机信息
+  res.data.driverInfoVo && takeCarInfo.setCarDriverInfo(res.data.driverInfoVo)
+  //   更新订单信息
+  res.data.orderId && takeCarInfo.setOrderId(res.data.orderId)
+  //   更新出发地信息
+  takeCarInfo.setFrom({
+    address: res.data.startLocation,
+    longitude: res.data.startPointLongitude,
+    latitude: res.data.startPointLatitude
+  })
+  //   更新目的地信息
+  takeCarInfo.setTo({
+    address: res.data.endLocation,
+    longitude: res.data.endPointLongitude,
+    latitude: res.data.endPointLatitude
+  })
+  takeCarInfo.setOrderStatus(res.data.status)
+  // 设置司机位置信息
+  // todo 地址位置写死：昌平区政府
+  takeCarInfo.setCarFrom({
+    address: '',
+    longitude: 116.23128,
+    latitude: 40.22077
+  })
+  // 如果状态为等于已接单的状态，则显示司机位置->开始位置的地图
+  if (res.data.status === OrderStatus.ACCEPTED) {
+    console.log('司机位置->开始位置的地图')
+    isArrivePassengerPickUpPoint.value = false
+    //   设置司机目的地
+    takeCarInfo.setCarTo({
+      address: res.data.startLocation,
+      longitude: res.data.startPointLongitude,
+      latitude: res.data.startPointLatitude
+    })
+    //   执行路径规划
+    await takeCarInfo.driversPickUpPassengersRoutePlan()
+  }
+  // 否则显示出发位置->结束位置的地图
+  else {
+    console.log('出发位置->结束位置的地图')
+    isArrivePassengerPickUpPoint.value = true
+    //  执行路径规划
+    await takeCarInfo.routePlan(2)
+  }
+}
+// 根据订单id 重载页面
+async function reloadPageHandleByOrderId(orderId: number | string) {
+  //  清空订单信息
+  takeCarInfo.$reset()
+  //   重新获取订单信息
+  await getOrderInfoHandleByOrderId(orderId)
+}
+//#endregion
+
 onLoad(() => {
+  console.log('orderId', props.orderId)
+  props.orderId && reloadPageHandleByOrderId(props.orderId)
   //   获取当前位置信息
   // takeCarInfo.routePlan()
   // let recorderManager = new RecorderManagerClass({
@@ -205,7 +272,7 @@ onLoad(() => {
 .location {
   position: absolute;
   right: 45rpx;
-  bottom: 480rpx;
+  bottom: 500rpx;
   width: 60rpx;
   height: 60rpx;
 }
