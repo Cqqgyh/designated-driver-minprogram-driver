@@ -49,7 +49,7 @@
             <template #title>
               <view class="flex flex-row flex-row-center-start">
                 <view style="height: 20rpx; width: 20rpx; background-color: #93da5f; border-radius: 50%"></view>
-                <text class="ml-20">{{ '北京天安门' }}</text>
+                <text class="ml-20 text-overflow-3" style="width: 420rpx">{{ takeCarInfo.from.address }}</text>
               </view>
             </template>
             <template #right>
@@ -63,12 +63,12 @@
               <uni-icons @click="callPhoneHandle" custom-prefix="iconfont" type="iconfontdianhua" size="30"></uni-icons>
             </template>
           </tm-cell>
-          <tm-cell :margin="[0, 0]" :titleFontSize="30">
-            <template #title>
-              <tm-text color="grey" label="东大街10号"></tm-text>
-            </template>
-            <template #right></template>
-          </tm-cell>
+          <!--          <tm-cell :margin="[0, 0]" :titleFontSize="30">-->
+          <!--            <template #title>-->
+          <!--              <tm-text color="grey" label="东大街10号"></tm-text>-->
+          <!--            </template>-->
+          <!--            <template #right></template>-->
+          <!--          </tm-cell>-->
         </view>
         <loading-button
           :block="true"
@@ -89,7 +89,7 @@
             <template #title>
               <view class="flex flex-row flex-row-center-start">
                 <view style="height: 20rpx; width: 20rpx; background-color: #48b6fc; border-radius: 50%"></view>
-                <text class="ml-20">{{ '北京天安门' }}</text>
+                <text class="ml-20 text-overflow-3" style="width: 420rpx">{{ takeCarInfo.to.address }}</text>
               </view>
             </template>
             <template #right>
@@ -102,12 +102,6 @@
               ></uni-icons>
               <uni-icons @click="callPhoneHandle" custom-prefix="iconfont" type="iconfontdianhua" size="30"></uni-icons>
             </template>
-          </tm-cell>
-          <tm-cell :margin="[0, 0]" :titleFontSize="30">
-            <template #title>
-              <tm-text color="grey" label="东大街10号"></tm-text>
-            </template>
-            <template #right></template>
           </tm-cell>
         </view>
         <loading-button
@@ -136,7 +130,7 @@ const props = defineProps({
   // 订单id
   orderId: {
     type: Number || String,
-    default: true
+    required: true
   }
 })
 // 打车相关信息仓库
