@@ -2,7 +2,7 @@
   <tm-app>
     <!--    出发地到目的地地图-->
     <map
-      v-show="isArrivePassengerPickUpPoint"
+      v-show="takeCarInfo?.orderInfo.orderStatus <= OrderStatus.ACCEPTED"
       :key="1"
       id="map"
       class="map"
@@ -22,7 +22,7 @@
     </map>
     <!--    司机到乘客路线地图-->
     <map
-      v-show="!isArrivePassengerPickUpPoint"
+      v-show="takeCarInfo?.orderInfo.orderStatus > OrderStatus.ACCEPTED"
       :key="2"
       id="driveMap"
       class="map"
@@ -40,8 +40,8 @@
         <theme-icon custom-prefix="iconfont" type="iconfontditudingwei" size="30"></theme-icon>
       </cover-view>
     </map>
-    <!--    起点-->
-    <view v-if="!isArrivePassengerPickUpPoint" class="location-panel">
+    <!--    起点司机已接单的时候显示-->
+    <view v-if="takeCarInfo?.orderInfo.orderStatus === OrderStatus.ACCEPTED" class="location-panel">
       <tm-sheet :round="3" :shadow="2">
         <!--        起点-->
         <view>
@@ -80,8 +80,62 @@
         ></loading-button>
       </tm-sheet>
     </view>
-    <!--    终点-->
-    <view v-if="isArrivePassengerPickUpPoint" class="location-panel">
+    <!--    录入车辆信息 司机已到达的时候显示-->
+    <view v-if="takeCarInfo?.orderInfo.orderStatus === OrderStatus.DRIVER_ARRIVED" class="location-panel">
+      <tm-sheet :round="3" :shadow="2">
+        <!--        起点-->
+        <view>
+          <tm-cell :margin="[0, 0]" :titleFontSize="30">
+            <template #title>
+              <view class="flex flex-row flex-row-center-start">
+                <view style="height: 20rpx; width: 20rpx; background-color: #93da5f; border-radius: 50%"></view>
+                <text class="ml-20 text-overflow-3" style="width: 420rpx">{{ takeCarInfo.from.address }}</text>
+              </view>
+            </template>
+            <template #right>
+              <uni-icons
+                @click="openExternalMapHandle(takeCarInfo.from)"
+                custom-prefix="iconfont"
+                class="mr-10"
+                type="iconfontditu"
+                size="30"
+              ></uni-icons>
+              <uni-icons @click="callPhoneHandle" custom-prefix="iconfont" type="iconfontdianhua" size="30"></uni-icons>
+            </template>
+          </tm-cell>
+        </view>
+        <loading-button :block="true" :click-fun="inputCarInfoHandle" :margin="[10]" :shadow="0" size="large" label="录入车辆信息"></loading-button>
+      </tm-sheet>
+    </view>
+    <!--    开始服务 已录入车辆信息时显示-->
+    <view v-if="takeCarInfo?.orderInfo.orderStatus === OrderStatus.UPDATE_CART_INFO" class="location-panel">
+      <tm-sheet :round="3" :shadow="2">
+        <!--        起点-->
+        <view>
+          <tm-cell :margin="[0, 0]" :titleFontSize="30">
+            <template #title>
+              <view class="flex flex-row flex-row-center-start">
+                <view style="height: 20rpx; width: 20rpx; background-color: #93da5f; border-radius: 50%"></view>
+                <text class="ml-20 text-overflow-3" style="width: 420rpx">{{ takeCarInfo.from.address }}</text>
+              </view>
+            </template>
+            <template #right>
+              <uni-icons
+                @click="openExternalMapHandle(takeCarInfo.from)"
+                custom-prefix="iconfont"
+                class="mr-10"
+                type="iconfontditu"
+                size="30"
+              ></uni-icons>
+              <uni-icons @click="callPhoneHandle" custom-prefix="iconfont" type="iconfontdianhua" size="30"></uni-icons>
+            </template>
+          </tm-cell>
+        </view>
+        <loading-button :block="true" :click-fun="startServiceHandle" :margin="[10]" :shadow="0" size="large" label="开始服务"></loading-button>
+      </tm-sheet>
+    </view>
+    <!--    终点  开始服务时显示-->
+    <view v-if="takeCarInfo?.orderInfo.orderStatus === OrderStatus.START_SERVICE" class="location-panel">
       <tm-sheet :round="3" :shadow="2">
         <!--        终点-->
         <view>
@@ -151,11 +205,16 @@ function callPhoneHandle() {
 
 //#region <起点、终点相关>
 // 到达乘客起点
-// 是否到达起点
-const isArrivePassengerPickUpPoint = ref(false)
 function reachTheStartingPointHandle() {
-  isArrivePassengerPickUpPoint.value = true
   console.log('到达乘客起点-reachTheStartingPointHandle')
+}
+// 录入车辆信息
+function inputCarInfoHandle() {
+  console.log('录入车辆信息-inputCarInfoHandle')
+}
+// 开始服务
+function startServiceHandle() {
+  console.log('开始服务-startServiceHandle')
 }
 // 到达乘客终点
 function reachTheEndingPointHandle() {
@@ -215,7 +274,6 @@ async function getOrderInfoHandleByOrderId(orderId: number | string) {
   // 如果状态为等于已接单的状态，则显示司机位置->开始位置的地图
   if (res.data.status === OrderStatus.ACCEPTED) {
     console.log('司机位置->开始位置的地图')
-    isArrivePassengerPickUpPoint.value = false
     //   设置司机目的地
     takeCarInfo.setCarTo({
       address: res.data.startLocation,
@@ -228,7 +286,6 @@ async function getOrderInfoHandleByOrderId(orderId: number | string) {
   // 否则显示出发位置->结束位置的地图
   else {
     console.log('出发位置->结束位置的地图')
-    isArrivePassengerPickUpPoint.value = true
     //  执行路径规划
     await takeCarInfo.routePlan(2)
   }
