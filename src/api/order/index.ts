@@ -1,5 +1,5 @@
 import http from '@/http'
-import { ICurrentLocation, IDrivingLineVo, IOrder, IOrderDetail, IQueryParams } from '@/api/order/types'
+import { ICarInfo, ICurrentLocation, IDrivingLineVo, IEndOrderServiceParams, IOrder, IOrderDetail, IQueryParams } from '@/api/order/types'
 import { OrderStatus } from '@/config/constEnums'
 /**
  * 开始接单服务
@@ -71,4 +71,36 @@ export function updateLocationCacheToEnd(params: ICurrentLocation) {
  */
 export function getOrderStatus(orderId: number) {
   return http.get<OrderStatus>(`/order/getOrderStatus/${orderId}`)
+}
+
+/**
+ * 司机到达代驾起始地点：更新订单状态
+ * @param orderId
+ */
+export function updateOrderStatusToDriverArrived(orderId: number) {
+  return http.get(`/order/driverArriveStartLocation/${orderId}`)
+}
+
+/**
+ * 更新代驾车辆信息
+ * @param params
+ */
+export function updateCarInfo(params: ICarInfo) {
+  return http.post('/order/updateOrderCart', params)
+}
+
+/**
+ * 开始代驾服务
+ * @param orderId
+ */
+export function startOrderServiceByDriver(orderId: number) {
+  return http.post('/order/startDrive', { orderId })
+}
+
+/**
+ * 结束代驾服务更新订单账单
+ * @param params
+ */
+export function endOrderServiceByDriver(params: IEndOrderServiceParams) {
+  return http.post('/order/endDrive', params)
 }

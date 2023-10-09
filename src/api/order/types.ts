@@ -172,3 +172,18 @@ export interface IFeeRuleResponseVo {
   exceedLongDistance: number
   exceedLongDistancePrice: number
 }
+// 车辆信息
+export interface ICarInfo {
+  carLicense: string
+  carType: string
+  carFrontUrl: string
+  carBackUrl: string
+}
+// 结束代驾
+export interface IEndOrderServiceParams {
+  orderId: number
+  tollFee: number
+  parkingFee: number
+  otherFee: number
+}
+

@@ -176,7 +176,7 @@ import { useTakeCarInfoStore } from '@/store/modules/takeCarInfo'
 import tmDrawer from '@/tmui/components/tm-drawer/tm-drawer.vue'
 import { useTimeIncrease } from '@/hooks/useTimeIncrease'
 import { IRecordCallback, RecorderManagerClass } from '@/class/RecorderManagerClass'
-import { getOrderDetail } from '@/api/order'
+import { getOrderDetail, startOrderServiceByDriver, updateOrderStatusToDriverArrived } from '@/api/order'
 import { OrderStatus } from '@/config/constEnums'
 const map = uni.createMapContext('map')
 const driveMap = uni.createMapContext('driveMap')
@@ -205,16 +205,18 @@ function callPhoneHandle() {
 
 //#region <起点、终点相关>
 // 到达乘客起点
-function reachTheStartingPointHandle() {
+async function reachTheStartingPointHandle() {
   console.log('到达乘客起点-reachTheStartingPointHandle')
+  await updateOrderStatusToDriverArrived(takeCarInfo.orderInfo.orderId)
 }
 // 录入车辆信息
 function inputCarInfoHandle() {
   console.log('录入车辆信息-inputCarInfoHandle')
 }
 // 开始服务
-function startServiceHandle() {
+async function startServiceHandle() {
   console.log('开始服务-startServiceHandle')
+  await startOrderServiceByDriver(takeCarInfo.orderInfo.orderId)
 }
 // 到达乘客终点
 function reachTheEndingPointHandle() {
