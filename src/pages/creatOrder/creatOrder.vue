@@ -2,7 +2,7 @@
   <tm-app>
     <!--    出发地到目的地地图-->
     <map
-      v-show="takeCarInfo?.orderInfo.orderStatus <= OrderStatus.ACCEPTED"
+      v-show="takeCarInfo?.orderInfo.orderStatus > OrderStatus.ACCEPTED"
       :key="1"
       id="map"
       class="map"
@@ -22,7 +22,7 @@
     </map>
     <!--    司机到乘客路线地图-->
     <map
-      v-show="takeCarInfo?.orderInfo.orderStatus > OrderStatus.ACCEPTED"
+      v-show="takeCarInfo?.orderInfo.orderStatus <= OrderStatus.ACCEPTED"
       :key="2"
       id="driveMap"
       class="map"
