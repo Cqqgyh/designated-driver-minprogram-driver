@@ -62,6 +62,13 @@
         "navigationBarTitleText": "基本信息"
         //        "navigationBarBackgroundColor": "#E7F0FF"
       }
+    },
+    {
+      "path": "pages/collectCarInfo/collectCarInfo",
+      "style": {
+        "navigationBarTitleText": "上传车辆信息"
+        //        "navigationBarBackgroundColor": "#E7F0FF"
+      }
     }
   ],
   //	分包配置
@@ -152,6 +159,10 @@
       {
         "name": "测试页-基本信息",
         "path": "pages/driverInformation/driverInformation"
+      },
+      {
+        "name": "测试页-上传车辆信息",
+        "path": "pages/collectCarInfo/collectCarInfo"
       }
     ]
   }
