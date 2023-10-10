@@ -300,9 +300,11 @@ export const useTakeCarInfoStore = defineStore({
         type: 'gcj02',
         success: (res) => {
           if (type === 1) {
+            // 上传位置
             updateLocationCacheToStart({
               // longitude: res.longitude,
               // latitude: res.latitude
+              orderId: this.orderInfo.orderId,
               // todo 地址位置写死：昌平区政府
               longitude: 116.23128,
               latitude: 40.22077
@@ -317,9 +319,11 @@ export const useTakeCarInfoStore = defineStore({
             //  路径规划
             this.driversPickUpPassengersRoutePlan()
           } else {
+            // 上传位置
             updateLocationCacheToEnd({
               // longitude: res.longitude,
               // latitude: res.latitude
+              orderId: this.orderInfo.orderId,
               // todo 地址位置写死：昌平区政府
               longitude: 116.23128,
               latitude: 40.22077
@@ -336,8 +340,6 @@ export const useTakeCarInfoStore = defineStore({
           }
         }
       })
-      // 上传位置
-      // await updateOrderLocation(params)
     },
     // 查询订单状态
     async getOrderStatusHandle() {

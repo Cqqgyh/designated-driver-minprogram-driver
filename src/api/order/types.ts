@@ -186,4 +186,3 @@ export interface IEndOrderServiceParams {
   parkingFee: number
   otherFee: number
 }
-

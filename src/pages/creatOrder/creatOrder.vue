@@ -212,10 +212,15 @@ async function reachTheStartingPointHandle() {
 // 录入车辆信息
 function inputCarInfoHandle() {
   console.log('录入车辆信息-inputCarInfoHandle')
+  uni.navigateTo({
+    url: `/pages/collectCarInfo/collectCarInfo?orderId=${takeCarInfo.orderInfo.orderId}`
+  })
 }
 // 开始服务
 async function startServiceHandle() {
   console.log('开始服务-startServiceHandle')
+  // 上传当前位置
+  await takeCarInfo.updateLocation(2)
   await startOrderServiceByDriver(takeCarInfo.orderInfo.orderId)
 }
 // 到达乘客终点

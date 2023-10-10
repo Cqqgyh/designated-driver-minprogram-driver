@@ -55,14 +55,14 @@ export function getOrderDetail(orderId: number | string) {
 /**
  * 司机赶往代驾起始点：更新订单地址到缓存 : 接单位置->出发地 更新位置
  */
-export function updateLocationCacheToStart(params: ICurrentLocation) {
+export function updateLocationCacheToStart(params: ICurrentLocation & { orderId: number }) {
   return http.post('/location/updateOrderLocationToCache', params)
 }
 
 /**
  * 开始代驾服务：保存代驾服务订单位置 : 出发地->目的地 更新位置
  */
-export function updateLocationCacheToEnd(params: ICurrentLocation) {
+export function updateLocationCacheToEnd(params: ICurrentLocation & { orderId: number }) {
   return http.post('/location/saveOrderServiceLocation', [params])
 }
 /**
@@ -85,7 +85,7 @@ export function updateOrderStatusToDriverArrived(orderId: number) {
  * 更新代驾车辆信息
  * @param params
  */
-export function updateCarInfo(params: ICarInfo) {
+export function updateCarInfo(params: ICarInfo & { orderId: number }) {
   return http.post('/order/updateOrderCart', params)
 }
 
