@@ -309,7 +309,8 @@ export const useTakeCarInfoStore = defineStore({
             })
             // 设置车辆位置
             this.setCarFrom({
-              address: '',
+              address: res.address || this.from.address,
+              // todo 地址位置写死：昌平区政府
               longitude: 116.23128,
               latitude: 40.22077
             })
@@ -325,7 +326,8 @@ export const useTakeCarInfoStore = defineStore({
             })
             // 设置车辆位置
             this.setFrom({
-              address: '',
+              address: res.address || this.to.address,
+              // todo 地址位置写死：昌平区政府
               longitude: 116.23128,
               latitude: 40.22077
             })
