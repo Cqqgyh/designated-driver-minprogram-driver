@@ -158,14 +158,7 @@
             </template>
           </tm-cell>
         </view>
-        <loading-button
-          :block="true"
-          :click-fun="reachTheEndingPointHandle"
-          :margin="[10]"
-          :shadow="0"
-          size="large"
-          label="到达乘客终点"
-        ></loading-button>
+        <arrive-at-the-destination :order-id="orderId" :callBack="reachTheEndingPointHandle"></arrive-at-the-destination>
       </tm-sheet>
     </view>
   </tm-app>
@@ -178,6 +171,7 @@ import { useTimeIncrease } from '@/hooks/useTimeIncrease'
 import { IRecordCallback, RecorderManagerClass } from '@/class/RecorderManagerClass'
 import { getOrderDetail, startOrderServiceByDriver, updateOrderStatusToDriverArrived } from '@/api/order'
 import { OrderStatus } from '@/config/constEnums'
+import ArriveAtTheDestination from '@/pages/creatOrder/components/arriveAtTheDestination.vue'
 const map = uni.createMapContext('map')
 const driveMap = uni.createMapContext('driveMap')
 const props = defineProps({
@@ -226,6 +220,15 @@ async function startServiceHandle() {
 // 到达乘客终点
 function reachTheEndingPointHandle() {
   console.log('到达乘客终点-reachTheEndingPointHandle')
+  //   关闭监听
+  takeCarInfo.stopQueryOrderStatus()
+  //   跳转到订单详情页面
+  uni.redirectTo({
+    url: `/pages/orderDetail/orderDetail?orderId=${takeCarInfo.orderInfo.orderId}`
+  })
+  //   清空订单信息
+  takeCarInfo.$reset()
+  console.log('takeCarInfo', takeCarInfo)
 }
 //  打开外部地图
 function openExternalMapHandle(params: typeof takeCarInfo.from) {
