@@ -69,7 +69,7 @@ export function updateLocationCacheToEnd(params: ICurrentLocation & { orderId: n
  * @description 查询订单状态
  * @param orderId
  */
-export function getOrderStatus(orderId: number) {
+export function getOrderStatus(orderId: number | string) {
   return http.get<OrderStatus>(`/order/getOrderStatus/${orderId}`)
 }
 
@@ -103,4 +103,11 @@ export function startOrderServiceByDriver(orderId: number) {
  */
 export function endOrderServiceByDriver(params: IEndOrderServiceParams) {
   return http.post('/order/endDrive', params)
+}
+/**
+ * 司机发送账单信息
+ * @param orderId
+ */
+export function sendOrderBillInfo(orderId: number | string) {
+  return http.get(`/order/sendOrderBillInfo/${orderId}`)
 }
