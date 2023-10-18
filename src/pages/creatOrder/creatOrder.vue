@@ -172,6 +172,7 @@ import { IRecordCallback, RecorderManagerClass } from '@/class/RecorderManagerCl
 import { getOrderDetail, startOrderServiceByDriver, updateOrderStatusToDriverArrived } from '@/api/order'
 import { OrderStatus } from '@/config/constEnums'
 import ArriveAtTheDestination from '@/pages/creatOrder/components/arriveAtTheDestination.vue'
+
 const map = uni.createMapContext('map')
 const driveMap = uni.createMapContext('driveMap')
 const props = defineProps({
@@ -189,6 +190,7 @@ function moveCurrentHandle() {
   map.moveToLocation(takeCarInfo.from)
   driveMap.moveToLocation(takeCarInfo.from)
 }
+
 // 打电话
 function callPhoneHandle() {
   uni.makePhoneCall({
@@ -203,6 +205,7 @@ async function reachTheStartingPointHandle() {
   console.log('到达乘客起点-reachTheStartingPointHandle')
   await updateOrderStatusToDriverArrived(takeCarInfo.orderInfo.orderId)
 }
+
 // 录入车辆信息
 function inputCarInfoHandle() {
   console.log('录入车辆信息-inputCarInfoHandle')
@@ -210,6 +213,7 @@ function inputCarInfoHandle() {
     url: `/pages/collectCarInfo/collectCarInfo?orderId=${takeCarInfo.orderInfo.orderId}`
   })
 }
+
 // 开始服务
 async function startServiceHandle() {
   console.log('开始服务-startServiceHandle')
@@ -217,6 +221,7 @@ async function startServiceHandle() {
   await takeCarInfo.updateLocation(2)
   await startOrderServiceByDriver(takeCarInfo.orderInfo.orderId)
 }
+
 // 到达乘客终点
 function reachTheEndingPointHandle() {
   console.log('到达乘客终点-reachTheEndingPointHandle')
@@ -227,9 +232,12 @@ function reachTheEndingPointHandle() {
     url: `/pages/orderDetail/orderDetail?orderId=${takeCarInfo.orderInfo.orderId}`
   })
   //   清空订单信息
-  takeCarInfo.$reset()
-  console.log('takeCarInfo', takeCarInfo)
+  setTimeout(() => {
+    takeCarInfo.$reset()
+    console.log('takeCarInfo', takeCarInfo)
+  }, 1000)
 }
+
 //  打开外部地图
 function openExternalMapHandle(params: typeof takeCarInfo.from) {
   console.log('打开外部地图-openExternalMapHandle')
@@ -251,6 +259,7 @@ function openExternalMapHandle(params: typeof takeCarInfo.from) {
     }
   })
 }
+
 //#endregion
 
 //#region <获取订单信息>
@@ -300,6 +309,7 @@ async function getOrderInfoHandleByOrderId(orderId: number | string) {
     await takeCarInfo.routePlan(2)
   }
 }
+
 // 订单轮询所需参数
 const queryOrderStatusParams = {
   WAITING_ACCEPT: () => {
@@ -325,11 +335,13 @@ const queryOrderStatusParams = {
   // 结束服务
   END_SERVICE: () => {
     console.log('结束服务')
+    // 结束账单状态轮询，前往订单详情
+    reachTheEndingPointHandle()
   },
   //  代付款
   UNPAID: () => {
-    // 结束账单状态轮询
-    takeCarInfo.stopQueryOrderStatus()
+    // 结束账单状态轮询，前往订单详情
+    reachTheEndingPointHandle()
     // // 跳转到订单详情页面
     // uni.redirectTo({
     //   url: `/pages/orderDetail/orderDetail?orderId=${takeCarInfo.orderInfo.orderId}`
@@ -342,16 +354,20 @@ const queryOrderStatusParams = {
   // 已付款
   PAID: () => {
     console.log('已付款')
+    // 结束账单状态轮询，前往订单详情
+    reachTheEndingPointHandle()
   },
   // 取消订单
   CANCEL_ORDER: () => {
     console.log('取消订单')
   }
 }
+
 // 订单状态轮询
 async function queryOrderStatusHandle() {
   await takeCarInfo.queryOrderStatus({ ...queryOrderStatusParams })
 }
+
 // 根据订单id 重载页面
 async function reloadPageHandleByOrderId(orderId: number | string) {
   //  清空订单信息
@@ -360,6 +376,7 @@ async function reloadPageHandleByOrderId(orderId: number | string) {
   await getOrderInfoHandleByOrderId(orderId)
   await queryOrderStatusHandle()
 }
+
 //#endregion
 
 onLoad(() => {
@@ -383,6 +400,7 @@ onLoad(() => {
   width: 100%;
   height: 100vh;
 }
+
 .location {
   position: absolute;
   right: 45rpx;
@@ -390,12 +408,14 @@ onLoad(() => {
   width: 60rpx;
   height: 60rpx;
 }
+
 .location-panel {
   position: absolute;
   //background: pink;
   width: 100%;
   bottom: 100rpx;
 }
+
 .pop-content {
   display: flex;
   flex-direction: column;
