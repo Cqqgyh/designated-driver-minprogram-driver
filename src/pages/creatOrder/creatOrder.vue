@@ -232,10 +232,10 @@ function reachTheEndingPointHandle() {
     url: `/pages/orderDetail/orderDetail?orderId=${takeCarInfo.orderInfo.orderId}`
   })
   //   清空订单信息
-  setTimeout(() => {
-    takeCarInfo.$reset()
-    console.log('takeCarInfo', takeCarInfo)
-  }, 1000)
+  // setTimeout(() => {
+  //   takeCarInfo.$reset()
+  //   console.log('takeCarInfo', takeCarInfo)
+  // }, 1500)
 }
 
 //  打开外部地图
