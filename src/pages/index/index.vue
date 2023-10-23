@@ -152,6 +152,10 @@ async function confirmTakingOrdersHandle() {
   await receiveOrder.grabOrder()
   await receiveOrder.stopOrderService()
   await cancelTakingOrdersHandle()
+  //   跳转到创建订单页面
+  await uni.navigateTo({
+    url: '/pages/creatOrder/creatOrder?orderId=' + receiveOrder.currentOrder.orderId
+  })
 }
 // 取消接单
 function cancelTakingOrdersForCustomerHandle() {
