@@ -1,6 +1,16 @@
 import http from '@/http'
-import { ICarInfo, ICurrentLocation, IDrivingLineVo, IEndOrderServiceParams, IOrder, IOrderDetail, IQueryParams } from '@/api/order/types'
+import {
+  ICarInfo,
+  ICurrentLocation,
+  IDrivingLineVo,
+  IEndOrderServiceParams,
+  IOrder,
+  IOrderDetail,
+  IOrderListItem,
+  IQueryParams
+} from '@/api/order/types'
 import { OrderStatus } from '@/config/constEnums'
+import { PageRes, ReqPage } from '@/api/types'
 /**
  * 开始接单服务
  */
@@ -110,4 +120,11 @@ export function endOrderServiceByDriver(params: IEndOrderServiceParams) {
  */
 export function sendOrderBillInfo(orderId: number | string) {
   return http.get(`/order/sendOrderBillInfo/${orderId}`)
+}
+
+/**
+ * 获取司机订单分页列表
+ */
+export function getOrderListPage(params: ReqPage) {
+  return http.get<PageRes<IOrderListItem>>(`/order/findDriverOrderPage/${params.page}/${params.limit}`)
 }
