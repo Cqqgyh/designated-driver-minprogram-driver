@@ -52,6 +52,7 @@ const navList = ref([
 //#region <下拉刷新，上拉加载>
 const refreshStatus = ref(false)
 const refreshBottomStatus = ref(false)
+
 // 下拉刷新
 function refresh() {
   refreshStatus.value = true
@@ -60,10 +61,12 @@ function refresh() {
     refreshStatus.value = false
   }, 1000)
 }
+
 // 上拉加载
 function refreshBottom() {
   console.log('上拉加载')
 }
+
 //#endregion
 </script>
 
