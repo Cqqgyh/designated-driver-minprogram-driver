@@ -8,6 +8,8 @@ import { TimerClass } from '@/class/TimerClass'
 import { IDriverInfo, IMarkersItem, IOrderStatusCallback, IPolylineItem } from '@/api/order/types'
 import { OrderStatus } from '@/config/constEnums'
 import { getExpectOrder, getOrderStatus, updateLocationCacheToEnd, updateLocationCacheToStart } from '@/api/order'
+import { RecorderManagerClass } from '@/class/RecorderManagerClass'
+import { getToken } from '@/utils/storage'
 function formatPolyline(polyline: any[]) {
   const coors = polyline
   const pl = []
@@ -30,6 +32,9 @@ export const useTakeCarInfoStore = defineStore({
   state: () => ({
     // 存放查询司机位置的轮询定时器实例:出发位置-> 目的地
     timer: null as unknown as TimerClass | null,
+    // 存放定时录音的定时器循环实例
+    recordTimer: null as unknown as TimerClass | null,
+    recorderManagerInstance: null as unknown as RecorderManagerClass | null,
     // 出发地
     from: {
       address: '',
@@ -433,6 +438,45 @@ export const useTakeCarInfoStore = defineStore({
       console.log('停止轮询订单状态--------stopQueryOrderStatus')
       this.orderInfo.timer?.stop()
       this.orderInfo.timer = null
+    },
+    // 轮询创建定时器，发送录音
+    async querySendRecord() {
+      if (this.recordTimer) return
+      this.stopQuerySendRecord()
+      this.recordTimer = new TimerClass({
+        time: 5000,
+        callback: async () => {
+          this.recorderManagerInstance?.stopRecord()
+          this.recorderManagerInstance = new RecorderManagerClass({
+            recordCallback: (res) => {
+              console.log('res----', res)
+              wx.uploadFile({
+                url:
+                  (import.meta.env.VITE_APP_NODE_ENV === 'development' ? import.meta.env.VITE_APP_BASE_API : import.meta.env.VITE_APP_BASE_URL) +
+                  '/monitor/upload', //仅为示例，非真实的接口地址
+                filePath: res.tempFilePath,
+                header: { token: getToken() },
+                name: 'file',
+                formData: {
+                  orderId: this.orderInfo.orderId,
+                  content: res.result
+                },
+                success(res) {
+                  console.log('res---uploadFile', res)
+                }
+              })
+            }
+          })
+          this.recorderManagerInstance.startRecord()
+        }
+      })
+      //   启动轮询
+      this.recordTimer.start()
+    },
+    stopQuerySendRecord() {
+      console.log('停止轮询生成录音--------stopQuerySendRecord')
+      this.recordTimer?.stop()
+      this.recordTimer = null
     },
     //   规划司机接乘客路径CarInfo
     async driversPickUpPassengersRoutePlan() {

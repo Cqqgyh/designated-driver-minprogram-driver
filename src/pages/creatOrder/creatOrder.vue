@@ -164,11 +164,7 @@
   </tm-app>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useTakeCarInfoStore } from '@/store/modules/takeCarInfo'
-import tmDrawer from '@/tmui/components/tm-drawer/tm-drawer.vue'
-import { useTimeIncrease } from '@/hooks/useTimeIncrease'
-import { IRecordCallback, RecorderManagerClass } from '@/class/RecorderManagerClass'
 import { getOrderDetail, startOrderServiceByDriver, updateOrderStatusToDriverArrived } from '@/api/order'
 import { OrderStatus } from '@/config/constEnums'
 import ArriveAtTheDestination from '@/pages/creatOrder/components/arriveAtTheDestination.vue'
@@ -227,6 +223,8 @@ function reachTheEndingPointHandle() {
   console.log('到达乘客终点-reachTheEndingPointHandle')
   //   关闭监听
   takeCarInfo.stopQueryOrderStatus()
+  // 关闭录音
+  takeCarInfo.stopQuerySendRecord()
   //   跳转到订单详情页面
   uni.redirectTo({
     url: `/pages/orderDetail/orderDetail?orderId=${takeCarInfo.orderInfo.orderId}`
@@ -331,6 +329,8 @@ const queryOrderStatusParams = {
   // 开始服务
   START_SERVICE: () => {
     console.log('开始服务')
+    //   开启录音
+    takeCarInfo.querySendRecord()
   },
   // 结束服务
   END_SERVICE: () => {
