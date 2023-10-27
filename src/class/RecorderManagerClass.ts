@@ -33,7 +33,7 @@ export class RecorderManagerClass {
   //   录音时长回调函数
   private readonly recordCallback: (params: IRecordCallback) => void
   constructor(params?: IRecorderManagerClass) {
-    this.maxDuration = params?.maxDuration || 5
+    this.maxDuration = params?.maxDuration || 60
     this.isRecording = false
     this.startTime = 0
     this.endTime = 0
@@ -76,6 +76,7 @@ export class RecorderManagerClass {
     this.recorderManager.stop()
     this.recorderManager = null
     clearInterval(this.recordTimer)
+    this.reset()
   }
   //   监听录音结束事件
   public onRecordEnd() {
@@ -86,8 +87,6 @@ export class RecorderManagerClass {
         fileSize: res.fileSize,
         result: res.result
       })
-      //  重置所有参数
-      this.reset()
     }
   }
   //   重置所有参数
