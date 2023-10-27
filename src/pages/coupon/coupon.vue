@@ -34,7 +34,7 @@ const currentIndex = ref(0)
 const navList = ref([
   {
     id: 0,
-    text: '全部'
+    text: '未领取'
   },
   {
     id: 1,
@@ -43,11 +43,11 @@ const navList = ref([
   {
     id: 2,
     text: '已使用'
-  },
-  {
-    id: 3,
-    text: '已过期'
   }
+  // {
+  //   id: 3,
+  //   text: '已过期'
+  // }
 ])
 //#region <下拉刷新，上拉加载>
 const refreshStatus = ref(false)
