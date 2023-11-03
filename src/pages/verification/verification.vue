@@ -208,7 +208,6 @@
           ></tm-input>
         </tm-form-item>
         <tm-form-item label="驾驶证证件号">
-          <!-- 不要问我为什么用v-model.lazy，我很受伤。 -->
           <tm-input
             :inputPadding="[0, 0]"
             disabled
@@ -218,7 +217,6 @@
           ></tm-input>
         </tm-form-item>
         <tm-form-item label="驾驶证有效期">
-          <!-- 不要问我为什么用v-model.lazy，我很受伤。 -->
           <tm-input
             :inputPadding="[0, 0]"
             disabled
@@ -228,7 +226,6 @@
           ></tm-input>
         </tm-form-item>
         <tm-form-item label="驾驶证初次领证日期">
-          <!-- 不要问我为什么用v-model.lazy，我很受伤。 -->
           <tm-input
             :inputPadding="[0, 0]"
             disabled
