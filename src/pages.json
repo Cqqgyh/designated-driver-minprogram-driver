@@ -15,12 +15,12 @@
         "titlePenetrate": "YES"
       }
     },
-    {
-      "path": "pages/coupon/coupon",
-      "style": {
-        "navigationBarTitleText": "优惠券"
-      }
-    },
+//    {
+//      "path": "pages/coupon/coupon",
+//      "style": {
+//        "navigationBarTitleText": "优惠券"
+//      }
+//    },
     {
       "path": "pages/userCenter/userCenter",
       "style": {
@@ -108,10 +108,10 @@
         //        "selectedIconPath": "static/image/icon_component_HL.png",
         "text": ""
       },
-      {
-        "pagePath": "pages/coupon/coupon",
-        "text": ""
-      },
+//      {
+//        "pagePath": "pages/coupon/coupon",
+//        "text": ""
+//      },
       {
         "pagePath": "pages/userCenter/userCenter",
         "text": ""
@@ -131,11 +131,11 @@
         "name": "测试页-首页",
         "path": "pages/index/index"
       },
-      {
-        "name": "测试页-优惠券",
-        "path": "pages/coupon/coupon",
-        "query": ""
-      },
+//      {
+//        "name": "测试页-优惠券",
+//        "path": "pages/coupon/coupon",
+//        "query": ""
+//      },
       {
         "name": "测试页-个人中心",
         "path": "pages/userCenter/userCenter"

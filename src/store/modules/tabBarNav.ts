@@ -16,15 +16,15 @@ export const useTabBarStore = defineStore({
         text: '首页',
         pagePath: '/pages/index/index'
       },
+      // {
+      //   index: 1,
+      //   activeColor: getActiveColor(),
+      //   icon: 'tmicon-icon',
+      //   text: '优惠券',
+      //   pagePath: '/pages/coupon/coupon'
+      // },
       {
         index: 1,
-        activeColor: getActiveColor(),
-        icon: 'tmicon-icon',
-        text: '优惠券',
-        pagePath: '/pages/coupon/coupon'
-      },
-      {
-        index: 2,
         activeColor: getActiveColor(),
         icon: 'tmicon-userplus-fill',
         text: '个人中心',
