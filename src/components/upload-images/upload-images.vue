@@ -3,7 +3,7 @@
 </template>
 <script setup lang="ts">
 import { useAttrs } from 'vue'
-const upLoadUrl = ref(import.meta.env.VITE_APP_UPLOAD_URL as string)
+const upLoadUrl = ref((import.meta.env.VITE_APP_UPLOAD_URL as string) + '/file/upload')
 const attrs = useAttrs()
 const emit = defineEmits(['update:modelValue'])
 
