@@ -69,6 +69,13 @@
         "navigationBarTitleText": "上传车辆信息"
         //        "navigationBarBackgroundColor": "#E7F0FF"
       }
+    },
+    {
+      "path": "pages/verification/verification",
+      "style": {
+        "navigationBarTitleText": "验证"
+        //        "navigationBarBackgroundColor": "#E7F0FF"
+      }
     }
   ],
   //	分包配置
