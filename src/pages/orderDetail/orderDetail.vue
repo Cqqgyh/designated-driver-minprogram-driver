@@ -122,9 +122,11 @@ function collectMoney() {
   // 去往支付成功页面
   console.log('收款成功')
 }
-
+const queryOrderPayStatusFlag = ref(true)
 // 查询订单支付状态
 async function queryOrderPayStatusHandle(orderId: string | number, times: number = 100, interval: number = 2000, callback = () => collectMoney()) {
+  // 轮询查询订单支付状态
+  if (!queryOrderPayStatusFlag.value) return
   // 轮询查询订单支付状态
   try {
     console.log('轮询查询订单支付状态---start')
@@ -153,12 +155,21 @@ async function queryOrderPayStatusHandle(orderId: string | number, times: number
     console.log(error)
   }
 }
-
+// 停止查询
+async function stopQueryOrderStatus() {
+  queryOrderPayStatusFlag.value = false
+}
 onLoad(async () => {
   console.log('props.orderId----', props?.orderId)
   props?.orderId && (await getOrderDetailHandle(props?.orderId as unknown as string))
   //   轮询查询订单支付状态
+  // 轮询查询订单支付状态
+  queryOrderPayStatusFlag.value = true
   orderDetail.value.status < OrderStatus.PAID && (await queryOrderPayStatusHandle(props?.orderId))
+})
+onUnload(() => {
+  //   停止轮询
+  stopQueryOrderStatus()
 })
 </script>
 
