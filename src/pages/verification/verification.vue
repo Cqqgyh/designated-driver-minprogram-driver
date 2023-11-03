@@ -313,10 +313,10 @@ async function confirm(validateInfo: {
     driverLicenseExpire: formData.value.driverLicenseFrontUrl[0].originalData.driverLicenseExpire,
     driverLicenseIssueDate: formData.value.driverLicenseFrontUrl[0].originalData.driverLicenseIssueDate,
     driverLicenseFrontUrl: formData.value.driverLicenseFrontUrl[0].originalData.driverLicenseFrontUrl,
-    driverLicenseBackUrl: formData.value.driverLicenseFrontUrl[0].originalData.driverLicenseBackUrl as unknown as string,
+    driverLicenseBackUrl: '',
     driverLicenseHandUrl: formData.value.driverLicenseHandUrl[0].originalData.url
   }
-  console.log('params',params)
+  console.log('params', params)
   await updateUserInfo(params)
   // back()
 }

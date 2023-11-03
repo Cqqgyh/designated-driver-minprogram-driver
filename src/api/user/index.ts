@@ -17,7 +17,7 @@ export function getUserInfo() {
  * @description 更新用户信息
  */
 export function updateUserInfo(userInfo: UpdateUserInfoInterface) {
-  return http.post('/driver/updateDriverAuthInfo')
+  return http.post('/driver/updateDriverAuthInfo', userInfo)
 }
 
 /**
