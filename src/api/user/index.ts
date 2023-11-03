@@ -1,5 +1,5 @@
 import http from '@/http'
-import { UpdateUserInfoInterface, UserInfoInterface, WxUpdatePhoneInterface } from '@/api/user/types'
+import { DriverAuthInfoInterface, UpdateUserInfoInterface, UserInfoInterface, WxUpdatePhoneInterface } from '@/api/user/types'
 /**
  * @description 小程序登录
  * @param  {string} code
@@ -20,6 +20,12 @@ export function updateUserInfo(userInfo: UpdateUserInfoInterface) {
   return http.post('/driver/updateDriverAuthInfo')
 }
 
+/**
+ * 获取司机认证信息
+ */
+export function getDriverAuthInfo() {
+  return http.get<DriverAuthInfoInterface>('/driver/getDriverAuthInfo')
+}
 /**
  * @description 更新用户手机号（通过微信）
  * @param  {WxUpdatePhoneInterface} params

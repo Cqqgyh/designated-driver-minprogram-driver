@@ -34,6 +34,35 @@ export interface UpdateUserInfoInterface {
   contactPhone?: string
   contactRelationship?: string
 }
+// 获取司机认证信息接口
+export interface DriverAuthInfoInterface {
+  phone: string
+  name: string
+  gender: string
+  birthday: string
+  idcardNo: string
+  idcardAddress: string
+  idcardExpire: string
+  idcardFrontUrl: string
+  idcardFrontShowUrl: string
+  idcardBackUrl: string
+  idcardBackShowUrl: string
+  idcardHandUrl: string
+  idcardHandShowUrl: string
+  driverLicenseClazz: string
+  driverLicenseNo: string
+  driverLicenseExpire: string
+  driverLicenseIssueDate: string
+  driverLicenseFrontUrl: string
+  driverLicenseFrontShowUrl: string
+  driverLicenseBackUrl: string
+  driverLicenseBackShowUrl: string
+  driverLicenseHandUrl: string
+  driverLicenseHandShowUrl: string
+  contactName: string
+  contactPhone: string
+  contactRelationship: string
+}
 // 微信登陆返回信息接口
 export interface WxLoginResponseInterface {
   openid: string
@@ -51,4 +80,29 @@ export interface WechatUserInfoInterface {
 // 更新微信用户手机号
 export interface WxUpdatePhoneInterface {
   code: string
+}
+// 身份证上传接口
+export interface IdCardOcrInterface {
+  name: string
+  gender: string
+  birthday: string
+  idcardNo: string
+  idcardAddress: string
+  idcardExpire: string
+  idcardFrontUrl: string
+  idcardFrontShowUrl: string
+  idcardBackUrl: string
+  idcardBackShowUrl: string
+}
+// 驾驶证
+export interface DriverCardOcrInterface {
+  name: string
+  driverLicenseClazz: string
+  driverLicenseNo: string
+  driverLicenseExpire: string
+  driverLicenseIssueDate: string
+  driverLicenseFrontUrl: string
+  driverLicenseFrontShowUrl: string
+  driverLicenseBackUrl: string
+  driverLicenseBackShowUrl: string
 }
