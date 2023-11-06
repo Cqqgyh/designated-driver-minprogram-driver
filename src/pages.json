@@ -76,7 +76,14 @@
         "navigationBarTitleText": "验证"
         //        "navigationBarBackgroundColor": "#E7F0FF"
       }
-    }
+    },
+    {
+      "path": "pages/facialIdentification/facialIdentification",
+      "style": {
+        "navigationBarTitleText": "人脸识别"
+        //        "navigationBarBackgroundColor": "#E7F0FF"
+      }
+    },
   ],
   //	分包配置
   //	"subPackages": [
