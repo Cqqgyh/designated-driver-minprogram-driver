@@ -96,6 +96,7 @@ import { useTimeIncrease } from '@/hooks/useTimeIncrease'
 import { useCountdown } from '@/hooks/useCountdown'
 import tmNotification from '@/tmui/components/tm-notification/tm-notification.vue'
 import { useReceiveOrder } from '@/store/modules/receiveOrder'
+import { stopService } from '@/api/order'
 const receiveOrder = useReceiveOrder()
 const descriptionsOrder = computed(() => {
   return [
@@ -196,7 +197,11 @@ async function cancelTakingOrdersHandle() {
   receiveOrder.stopQuerySwitchCurrentOrder()
   //   隐藏
   closePopupHandle()
+  // 停止接单
+  await stopService()
 }
+// 判断司机是否认证+今日是否人脸识别
+
 //#endregion
 
 onShow(() => {
