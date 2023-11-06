@@ -132,6 +132,6 @@ export function getOrderListPage(params: ReqPage) {
 /**
  * 停止接单
  */
-export function stopService(params: ReqPage) {
+export function stopService() {
   return http.get('/driver/stopService')
 }
