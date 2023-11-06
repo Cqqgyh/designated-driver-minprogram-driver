@@ -1,9 +1,7 @@
 <template>
   <template></template>
 </template>
-<script lang="ts" setup>
-uni.hideTabBar()
-</script>
+<script lang="ts" setup></script>
 <style>
 /* 加载阿里图标字体 */
 @import './static/font/index.css';

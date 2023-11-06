@@ -199,7 +199,10 @@ async function cancelTakingOrdersHandle() {
 }
 //#endregion
 
-onShow(() => {})
+onShow(() => {
+  // 隐藏tabbar
+  uni.hideTabBar()
+})
 onLoad(() => {
   // setTimeout(() => {
   //   receivePushOrderHandle()
