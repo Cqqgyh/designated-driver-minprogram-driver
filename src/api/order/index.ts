@@ -128,3 +128,10 @@ export function sendOrderBillInfo(orderId: number | string) {
 export function getOrderListPage(params: ReqPage) {
   return http.get<PageRes<IOrderListItem>>(`/order/findDriverOrderPage/${params.page}/${params.limit}`)
 }
+
+/**
+ * 停止接单
+ */
+export function stopService(params: ReqPage) {
+  return http.get('/driver/stopService')
+}
