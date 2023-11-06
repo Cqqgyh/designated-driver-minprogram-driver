@@ -33,3 +33,15 @@ export function getDriverAuthInfo() {
 export function updateUserPhoneByWx(params: WxUpdatePhoneInterface) {
   return http.post('/driver/updateDriverPhone', params)
 }
+// 创建司机人脸模型
+export function creatDriverFaceModel(params: { imageBase64: string }) {
+  return http.post('/driver/creatDriverFaceModel', params)
+}
+// 验证司机人脸
+export function verifyDriverFace(params: { imageBase64: string }) {
+  return http.post('/driver/verifyDriverFace', params)
+}
+// 判断司机当日是否进行过人脸识别
+export function getDriverIsFaceRecognition() {
+  return http.get('/driver/isFaceRecognition')
+}
