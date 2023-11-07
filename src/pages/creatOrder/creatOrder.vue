@@ -283,7 +283,21 @@ async function getOrderInfoHandleByOrderId(orderId: number | string) {
   takeCarInfo.setOrderStatus(res.data.status)
   // 设置司机位置信息
   // todo 地址位置写死：昌平区政府
+  // uni.getLocation({
+  //   type: 'gcj02',
+  //   success: (res) => {
+  //     takeCarInfo.setCarFrom({
+  //       // longitude: res.longitude,
+  //       // latitude: res.latitude
+  //       address: '',
+  //       longitude: 116.23128,
+  //       latitude: 40.22077
+  //     })
+  //   }
+  // })
   takeCarInfo.setCarFrom({
+    // longitude: res.longitude,
+    // latitude: res.latitude
     address: '',
     longitude: 116.23128,
     latitude: 40.22077

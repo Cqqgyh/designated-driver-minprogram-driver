@@ -181,10 +181,11 @@ async function startTakingOrdersHandle() {
   const isAllowTakeOrder = await isTakeOrder()
   console.log('isAllowTakeOrder', isAllowTakeOrder)
   if (!isAllowTakeOrder) return
-  isTakingOrders.value = true
-  timeIncrease.start()
+
   // 开启接单服务
   await receiveOrder.startOrderService()
+  isTakingOrders.value = true
+  timeIncrease.start()
   // 轮询获取新订单
   await receiveOrder.queryGetNewOrder()
   // 轮询切换当前订单
