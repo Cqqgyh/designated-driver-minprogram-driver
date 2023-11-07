@@ -315,7 +315,9 @@ async function confirm(validateInfo: {
   }
   console.log('params', params)
   await updateUserInfo(params)
-  // back()
+  uni.navigateTo({
+    url: '/pages/facialIdentification/facialIdentification?creatFaceModel=true'
+  })
 }
 // 获取司机认证信息
 async function getDriverInfo() {
