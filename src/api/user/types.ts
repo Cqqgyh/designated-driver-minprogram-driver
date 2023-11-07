@@ -1,5 +1,6 @@
 // 从后台获取用户信息接口
 import { AuthStatus, Gender } from '@/config/constEnums'
+import { getDriverLoginInfo } from '@/api/user/index'
 
 export interface UserInfoInterface {
   isArchiveFace: boolean
@@ -105,4 +106,14 @@ export interface DriverCardOcrInterface {
   driverLicenseFrontShowUrl: string
   driverLicenseBackUrl: string
   driverLicenseBackShowUrl: string
+}
+// 司机登陆信息
+export interface DriverLoginInfoInterface {
+  id: number
+  wxOpenId: string
+  nickname: string
+  gender: string
+  avatarUrl: string
+  isArchiveFace: boolean
+  authStatus: number
 }

@@ -97,6 +97,7 @@ import { useCountdown } from '@/hooks/useCountdown'
 import tmNotification from '@/tmui/components/tm-notification/tm-notification.vue'
 import { useReceiveOrder } from '@/store/modules/receiveOrder'
 import { stopService } from '@/api/order'
+import { getDriverIsFaceRecognition, getDriverLoginInfo } from '@/api/user'
 const receiveOrder = useReceiveOrder()
 const descriptionsOrder = computed(() => {
   return [
@@ -177,6 +178,9 @@ const isTakingOrders = ref(false)
 // 开始接单
 async function startTakingOrdersHandle() {
   console.log('开始接单startTakingOrdersHandle')
+  const isAllowTakeOrder = await isTakeOrder()
+  console.log('isAllowTakeOrder', isAllowTakeOrder)
+  if (!isAllowTakeOrder) return
   isTakingOrders.value = true
   timeIncrease.start()
   // 开启接单服务
@@ -189,6 +193,7 @@ async function startTakingOrdersHandle() {
 // 取消接单
 async function cancelTakingOrdersHandle() {
   console.log('取消订单cancelOrderHandle')
+
   isTakingOrders.value = false
   timeIncrease.stopAndReset()
   // 停止轮询新订单
@@ -201,6 +206,58 @@ async function cancelTakingOrdersHandle() {
   await stopService()
 }
 // 判断司机是否认证+今日是否人脸识别
+async function isTakeOrder() {
+  const resList = await Promise.all([getDriverLoginInfo(), getDriverIsFaceRecognition()])
+  console.log('resList----', resList)
+  const driverLoginInfo = resList[0].data
+  const isFaceRecognition = resList[1].data
+  // authStatus	认证状态 0:未认证 1：审核中 2：认证通过 -1：认证未通过
+  if (driverLoginInfo.authStatus === 0) {
+    //   未认证，跳转认证页面
+    await uni.showToast({ title: '未认证，跳转认证页面', icon: 'none' })
+    setTimeout(() => {
+      uni.navigateTo({
+        url: '/pages/verification/verification'
+      })
+    }, 1000)
+  } else if (driverLoginInfo.authStatus === 1) {
+    //   审核中
+    await uni.showToast({ title: '正在审核中', icon: 'none' })
+  } else if (driverLoginInfo.authStatus === -1) {
+    //   未认证，跳转认证页面
+    await uni.showToast({ title: '认证未通过，跳转认证页面重新认证', icon: 'none' })
+    setTimeout(() => {
+      uni.navigateTo({
+        url: '/pages/verification/verification'
+      })
+    }, 1000)
+  } else {
+    //   通过认证
+    // 	是否建档人脸识别
+    if (driverLoginInfo.isArchiveFace) {
+      //   建档人脸识别，判断今天是否进行人脸识别
+      if (isFaceRecognition) {
+        return true
+      } else {
+        //   今日未曾人脸识别
+        await uni.showToast({ title: '今日未曾人脸识，跳转识别', icon: 'none' })
+        setTimeout(() => {
+          uni.navigateTo({
+            url: '/pages/facialIdentification/facialIdentification'
+          })
+        }, 1000)
+      }
+    } else {
+      //   未曾建档人脸识别
+      await uni.showToast({ title: '未录入人脸信息，跳转录入', icon: 'none' })
+      setTimeout(() => {
+        uni.navigateTo({
+          url: '/pages/facialIdentification/facialIdentification?creatFaceModel=true'
+        })
+      }, 1000)
+    }
+  }
+}
 
 //#endregion
 

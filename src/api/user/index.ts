@@ -1,5 +1,11 @@
 import http from '@/http'
-import { DriverAuthInfoInterface, UpdateUserInfoInterface, UserInfoInterface, WxUpdatePhoneInterface } from '@/api/user/types'
+import {
+  DriverAuthInfoInterface,
+  DriverLoginInfoInterface,
+  UpdateUserInfoInterface,
+  UserInfoInterface,
+  WxUpdatePhoneInterface
+} from '@/api/user/types'
 /**
  * @description 小程序登录
  * @param  {string} code
@@ -43,5 +49,12 @@ export function verifyDriverFace(params: { imageBase64: string }) {
 }
 // 判断司机当日是否进行过人脸识别
 export function getDriverIsFaceRecognition() {
-  return http.get('/driver/isFaceRecognition')
+  return http.get<boolean>('/driver/isFaceRecognition')
+}
+
+/**
+ * 获取司机登录信息
+ */
+export function getDriverLoginInfo() {
+  return http.get<DriverLoginInfoInterface>('/driver/getDriverLoginInfo')
 }
