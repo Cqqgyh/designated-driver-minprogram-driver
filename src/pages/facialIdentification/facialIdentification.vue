@@ -12,7 +12,7 @@ import { creatDriverFaceModel, verifyDriverFace } from '@/api/user'
 const props = defineProps({
   creatFaceModel: {
     type: Boolean,
-    default: true
+    default: false
   }
 })
 // imageToBase64
