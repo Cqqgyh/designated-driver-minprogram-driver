@@ -186,3 +186,8 @@ export interface IEndOrderServiceParams {
   parkingFee: number
   otherFee: number
 }
+export interface IDriverCurrentOrder {
+  orderId: number
+  status: number
+  isHasCurrentOrder: boolean
+}

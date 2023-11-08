@@ -2,6 +2,7 @@ import http from '@/http'
 import {
   ICarInfo,
   ICurrentLocation,
+  IDriverCurrentOrder,
   IDrivingLineVo,
   IEndOrderServiceParams,
   IOrder,
@@ -134,4 +135,11 @@ export function getOrderListPage(params: ReqPage) {
  */
 export function stopService() {
   return http.get('/driver/stopService')
+}
+
+/**
+ * 查找司机当前订单
+ */
+export function searchDriverCurrentOrder() {
+  return http.get<IDriverCurrentOrder>('/order/searchDriverCurrentOrder')
 }

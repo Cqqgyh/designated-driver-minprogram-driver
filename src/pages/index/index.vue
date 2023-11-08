@@ -96,8 +96,9 @@ import { useTimeIncrease } from '@/hooks/useTimeIncrease'
 import { useCountdown } from '@/hooks/useCountdown'
 import tmNotification from '@/tmui/components/tm-notification/tm-notification.vue'
 import { useReceiveOrder } from '@/store/modules/receiveOrder'
-import { stopService } from '@/api/order'
+import { searchDriverCurrentOrder, stopService } from '@/api/order'
 import { getDriverIsFaceRecognition, getDriverLoginInfo } from '@/api/user'
+import { getToken } from '@/utils/storage'
 const receiveOrder = useReceiveOrder()
 const descriptionsOrder = computed(() => {
   return [
@@ -181,6 +182,23 @@ async function startTakingOrdersHandle() {
   const isAllowTakeOrder = await isTakeOrder()
   console.log('isAllowTakeOrder', isAllowTakeOrder)
   if (!isAllowTakeOrder) return
+  // 是否存在未完成订单
+  // 判断已经存在订单，如果存在订单，则提示是否去往导航页
+  const { data } = await searchDriverCurrentOrder()
+  if (data.isHasCurrentOrder) {
+    uni.showModal({
+      title: '提示',
+      content: '您有未完成的订单，是否去往导航页？',
+      success: function (res) {
+        if (res.confirm) {
+          uni.navigateTo({
+            url: '/pages/creatOrder/creatOrder?orderId=' + data.orderId
+          })
+        }
+      }
+    })
+    return
+  }
 
   // 开启接单服务
   await receiveOrder.startOrderService()
@@ -262,9 +280,27 @@ async function isTakeOrder() {
 
 //#endregion
 
-onShow(() => {
+onShow(async () => {
   // 隐藏tabbar
   uni.hideTabBar()
+  if (getToken()) {
+    // 判断已经存在订单，如果存在订单，则提示是否去往导航页
+    const { data } = await searchDriverCurrentOrder()
+    if (data.isHasCurrentOrder) {
+      uni.showModal({
+        title: '提示',
+        content: '您有未完成的订单，是否去往导航页？',
+        success: function (res) {
+          if (res.confirm) {
+            uni.navigateTo({
+              url: '/pages/creatOrder/creatOrder?orderId=' + data.orderId
+            })
+          }
+        }
+      })
+      return
+    }
+  }
 })
 onLoad(() => {
   // setTimeout(() => {
