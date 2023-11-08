@@ -120,7 +120,19 @@ export interface IOrderDetail {
   createTime: string
   orderBillVo: IOrderBillVo
   driverInfoVo: IDriverInfo
+  orderProfitsharingVo: IOrderProfitsharingVo
   customerInfoVo: null
+}
+export interface IOrderProfitsharingVo {
+  orderAmount: number
+  paymentRate: number
+  paymentFee: number
+  driverTaxRate: number
+  driverTaxFee: number
+  platformIncome: number
+  driverIncome: number
+  // 1 未分账单 2 已分账
+  status: number
 }
 export interface IOrderBillVo {
   totalAmount: number

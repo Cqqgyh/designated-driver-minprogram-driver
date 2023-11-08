@@ -49,6 +49,17 @@
         <view class="flex-1 flex-col-center-center border-l-2 border-r-2 border-t-2 border-b-2">{{ item.value }}元</view>
       </view>
     </tm-sheet>
+    <!--    分账信息-->
+    <tm-sheet>
+      <view v-for="item in profitShareList.slice(0, profitShareList.length - 1)" :key="item.label" class="flex flex-row" style="height: 80rpx">
+        <view class="flex-1 flex flex-col-center-center border-l-2 border-t-2">{{ item.label }}</view>
+        <view class="flex-1 flex-col-center-center border-l-2 border-r-2 border-t-2 text-gray-1">{{ item.value }}</view>
+      </view>
+      <view v-for="item in profitShareList.slice(profitShareList.length - 1)" :key="item.label" class="flex flex-row" style="height: 80rpx">
+        <view class="flex-1 flex flex-col-center-center border-l-2 border-t-2 border-b-2">{{ item.label }}</view>
+        <view class="flex-1 flex-col-center-center border-l-2 border-r-2 border-t-2 border-b-2">{{ item.value }}</view>
+      </view>
+    </tm-sheet>
     <!--    支付 fixed b-0 -->
     <view class="flex flex-row flex-row-bottom-end pay-container mb-10">
       <loading-button color="red" :click-fun="handleReturn" :margin="[10]" :fontSize="35" :shadow="0" size="middle" label="返回"></loading-button>
@@ -66,7 +77,7 @@
   </tm-app>
 </template>
 <script setup lang="ts">
-import { IOrderDetail } from '@/api/order/types'
+import { IOrderDetail, IOrderProfitsharingVo } from '@/api/order/types'
 import { getOrderDetail, getOrderStatus, sendOrderBillInfo } from '@/api/order'
 import { getLabelByValue, OrderStatus, OrderStatusMap } from '@/config/constEnums'
 
@@ -77,6 +88,7 @@ const props = defineProps({
   }
 })
 const descriptionsList = ref<{ label: string; value: number | string }[]>([])
+const profitShareList = ref<{ label: string; value: number | string }[]>([])
 const orderDetail = ref({} as IOrderDetail)
 // 获取订单详情
 const getOrderDetailHandle = async (id: number | string) => {
@@ -91,10 +103,25 @@ const getOrderDetailHandle = async (id: number | string) => {
     { label: '远程费', value: res.data.orderBillVo?.longDistanceFee || 0 },
     { label: '顾客好处费', value: res.data.orderBillVo?.favourFee || 0 },
     { label: '系统奖励费', value: res.data.orderBillVo?.rewardFee || 0 },
-    { label: '优惠券金额', value: -res.data.orderBillVo?.couponAmount || 0 },
     { label: '总费用', value: res.data.orderBillVo?.totalAmount || 0 },
-    { label: '应付费用', value: res.data.orderBillVo?.payAmount || 0 }
+    { label: '优惠券金额', value: -res.data.orderBillVo?.couponAmount || 0 },
+    { label: '应收总费用', value: res.data.orderBillVo?.payAmount || 0 }
   ]
+
+  if (res.data.orderProfitsharingVo?.status === 1) {
+    profitShareList.value = [
+      //  平台
+      { label: '分账状态', value: res.data.orderProfitsharingVo?.status === 1 ? '未分账' : '已分账' }
+    ]
+  } else {
+    profitShareList.value = [
+      { label: '分账状态', value: res.data.orderProfitsharingVo?.status === 1 ? '未分账' : '已分账' },
+      { label: '微信平台费用', value: (res.data.orderProfitsharingVo?.paymentFee || 0) + '元' },
+      { label: '代缴税费', value: (res.data.orderProfitsharingVo?.driverTaxFee || 0) + '元' },
+      { label: '平台分账收入', value: (res.data.orderProfitsharingVo?.platformIncome || 0) + '元' },
+      { label: '司机分账收入', value: (res.data.orderProfitsharingVo?.driverIncome || 0) + '元' }
+    ]
+  }
 }
 // 返回
 const handleReturn = async () => {
