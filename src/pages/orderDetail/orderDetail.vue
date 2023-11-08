@@ -108,20 +108,13 @@ const getOrderDetailHandle = async (id: number | string) => {
     { label: '应收总费用', value: res.data.orderBillVo?.payAmount || 0 }
   ]
 
-  if (res.data.orderProfitsharingVo?.status === 1) {
-    profitShareList.value = [
-      //  平台
-      { label: '分账状态', value: res.data.orderProfitsharingVo?.status === 1 ? '未分账' : '已分账' }
-    ]
-  } else {
-    profitShareList.value = [
-      { label: '分账状态', value: res.data.orderProfitsharingVo?.status === 1 ? '未分账' : '已分账' },
-      { label: '微信平台费用', value: (res.data.orderProfitsharingVo?.paymentFee || 0) + '元' },
-      { label: '代缴税费', value: (res.data.orderProfitsharingVo?.driverTaxFee || 0) + '元' },
-      { label: '平台分账收入', value: (res.data.orderProfitsharingVo?.platformIncome || 0) + '元' },
-      { label: '司机分账收入', value: (res.data.orderProfitsharingVo?.driverIncome || 0) + '元' }
-    ]
-  }
+  profitShareList.value = [
+    { label: '分账状态', value: res.data.orderProfitsharingVo?.status === 1 ? '未分账' : '已分账' },
+    { label: '微信平台费用', value: (res.data.orderProfitsharingVo?.paymentFee || 0) + '元' },
+    { label: '代缴税费', value: (res.data.orderProfitsharingVo?.driverTaxFee || 0) + '元' },
+    { label: '平台分账收入', value: (res.data.orderProfitsharingVo?.platformIncome || 0) + '元' },
+    { label: '司机分账收入', value: (res.data.orderProfitsharingVo?.driverIncome || 0) + '元' }
+  ]
 }
 // 返回
 const handleReturn = async () => {
