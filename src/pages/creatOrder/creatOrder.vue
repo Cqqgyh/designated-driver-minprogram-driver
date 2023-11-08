@@ -410,6 +410,13 @@ onLoad(() => {
   // recorderManager.startRecord()
   // console.log('RecorderManagerClass', recorderManager)
 })
+onUnload(() => {
+  //   离开页面停止轮询
+  //   关闭监听
+  takeCarInfo.stopQueryOrderStatus()
+  // 关闭录音
+  takeCarInfo.stopQuerySendRecord()
+})
 </script>
 
 <style scoped lang="scss">
