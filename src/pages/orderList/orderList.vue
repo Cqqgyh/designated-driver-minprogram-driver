@@ -20,7 +20,7 @@
               <tm-text
                 _class="text-weight-b"
                 color="red"
-                :label="(item.status < OrderStatus.UNPAID ? '预估:' : '总共:') + item.amount.toFixed(2) + '元'"
+                :label="(item.status < OrderStatus.UNPAID ? '预估:' : '总共:') + (item?.amount.toFixed(2) || 0) + '元'"
               ></tm-text>
             </template>
             <template #right>
