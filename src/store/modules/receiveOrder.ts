@@ -32,6 +32,7 @@ export const useReceiveOrder = defineStore({
       uni.getLocation({
         type: 'gcj02',
         success: function (res) {
+          console.log('开启接单服务----更新位置', res)
           updateDriverLocation({
             // longitude: res.longitude,
             // latitude: res.latitude

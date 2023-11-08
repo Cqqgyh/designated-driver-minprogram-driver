@@ -283,43 +283,46 @@ async function getOrderInfoHandleByOrderId(orderId: number | string) {
   takeCarInfo.setOrderStatus(res.data.status)
   // 设置司机位置信息
   // todo 地址位置写死：昌平区政府
-  // uni.getLocation({
-  //   type: 'gcj02',
-  //   success: (res) => {
-  //     takeCarInfo.setCarFrom({
-  //       // longitude: res.longitude,
-  //       // latitude: res.latitude
-  //       address: '',
-  //       longitude: 116.23128,
-  //       latitude: 40.22077
-  //     })
-  //   }
-  // })
-  takeCarInfo.setCarFrom({
-    // longitude: res.longitude,
-    // latitude: res.latitude
-    address: '',
-    longitude: 116.23128,
-    latitude: 40.22077
+  uni.getLocation({
+    type: 'gcj02',
+    success: async (res2) => {
+      takeCarInfo.setCarFrom({
+        address: '',
+        longitude: res2.longitude,
+        latitude: res2.latitude
+        // longitude: 116.23128,
+        // latitude: 40.22077
+      })
+      // 如果状态为等于已接单的状态，则显示司机位置->开始位置的地图
+      if (res.data.status === OrderStatus.ACCEPTED) {
+        console.log('司机位置->开始位置的地图')
+        //   设置司机目的地
+        takeCarInfo.setCarTo({
+          address: res.data.startLocation,
+          longitude: res.data.startPointLongitude,
+          latitude: res.data.startPointLatitude
+        })
+        //   执行路径规划
+        await takeCarInfo.driversPickUpPassengersRoutePlan()
+      }
+      // 否则显示出发位置->结束位置的地图
+      else {
+        console.log('出发位置->结束位置的地图')
+        //  执行路径规划
+        await takeCarInfo.routePlan(2)
+      }
+    },
+    fail: (err) => {
+      console.log('设置司机位置信息--getLocation', err)
+    }
   })
-  // 如果状态为等于已接单的状态，则显示司机位置->开始位置的地图
-  if (res.data.status === OrderStatus.ACCEPTED) {
-    console.log('司机位置->开始位置的地图')
-    //   设置司机目的地
-    takeCarInfo.setCarTo({
-      address: res.data.startLocation,
-      longitude: res.data.startPointLongitude,
-      latitude: res.data.startPointLatitude
-    })
-    //   执行路径规划
-    await takeCarInfo.driversPickUpPassengersRoutePlan()
-  }
-  // 否则显示出发位置->结束位置的地图
-  else {
-    console.log('出发位置->结束位置的地图')
-    //  执行路径规划
-    await takeCarInfo.routePlan(2)
-  }
+  // takeCarInfo.setCarFrom({
+  //   // longitude: res.longitude,
+  //   // latitude: res.latitude
+  //   address: '',
+  //   longitude: 116.23128,
+  //   latitude: 40.22077
+  // })
 }
 
 // 订单轮询所需参数

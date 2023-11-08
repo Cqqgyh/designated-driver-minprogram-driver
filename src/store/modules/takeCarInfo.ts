@@ -307,38 +307,42 @@ export const useTakeCarInfoStore = defineStore({
           if (type === 1) {
             // 上传位置
             updateLocationCacheToStart({
-              // longitude: res.longitude,
-              // latitude: res.latitude
               orderId: this.orderInfo.orderId,
+              longitude: res.longitude,
+              latitude: res.latitude
               // todo 地址位置写死：昌平区政府
-              longitude: 116.23128,
-              latitude: 40.22077
+              // longitude: 116.23128,
+              // latitude: 40.22077
             })
             // 设置车辆位置
             this.setCarFrom({
               address: res.address || this.from.address,
+              longitude: res.longitude,
+              latitude: res.latitude
               // todo 地址位置写死：昌平区政府
-              longitude: 116.23128,
-              latitude: 40.22077
+              // longitude: 116.23128,
+              // latitude: 40.22077
             })
             //  路径规划
             this.driversPickUpPassengersRoutePlan()
           } else {
             // 上传位置
             updateLocationCacheToEnd({
-              // longitude: res.longitude,
-              // latitude: res.latitude
               orderId: this.orderInfo.orderId,
+              longitude: res.longitude,
+              latitude: res.latitude
               // todo 地址位置写死：昌平区政府
-              longitude: 116.23128,
-              latitude: 40.22077
+              // longitude: 116.23128,
+              // latitude: 40.22077
             })
             // 设置车辆位置
             this.setFrom({
               address: res.address || this.to.address,
+              longitude: res.longitude,
+              latitude: res.latitude
               // todo 地址位置写死：昌平区政府
-              longitude: 116.23128,
-              latitude: 40.22077
+              // longitude: 116.23128,
+              // latitude: 40.22077
             })
             //  路径规划
             this.routePlan(2)
