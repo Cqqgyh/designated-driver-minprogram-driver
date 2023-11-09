@@ -43,6 +43,21 @@
     <!--    起点司机已接单的时候显示-->
     <view v-if="takeCarInfo?.orderInfo.orderStatus === OrderStatus.ACCEPTED" class="location-panel">
       <tm-sheet :round="3" :shadow="2">
+        <!--       距离时间 -->
+        <view>
+          <tm-cell :margin="[0, 0]" :titleFontSize="30">
+            <template #title>
+              <view class="flex flex-row flex-row-center-start">
+                <view style="height: 20rpx; width: 20rpx; background-color: #93da5f; border-radius: 50%"></view>
+                <text class="ml-20 text-overflow-3" style="width: 300rpx">距离：{{ takeCarInfo.carInfo.RouteInfo.distance }}公里</text>
+                <text class="ml-20 text-overflow-3" style="width: 300rpx">时间：{{ takeCarInfo.carInfo.RouteInfo.duration }}分钟</text>
+              </view>
+            </template>
+            <template #right>
+              <view></view>
+            </template>
+          </tm-cell>
+        </view>
         <!--        起点-->
         <view>
           <tm-cell :margin="[0, 0]" :titleFontSize="30">
@@ -83,6 +98,27 @@
     <!--    录入车辆信息 司机已到达的时候显示-->
     <view v-if="takeCarInfo?.orderInfo.orderStatus === OrderStatus.DRIVER_ARRIVED" class="location-panel">
       <tm-sheet :round="3" :shadow="2">
+        <!--       距离时间 -->
+        <view>
+          <tm-cell :margin="[0, 0]" :titleFontSize="30">
+            <template #title>
+              <view class="flex flex-row flex-row-center-start">
+                <view style="height: 20rpx; width: 20rpx; background-color: #93da5f; border-radius: 50%"></view>
+                <text class="ml-20 text-overflow-3" style="width: 300rpx">距离：{{ takeCarInfo.RouteInfo.distance }}公里</text>
+                <text class="ml-20 text-overflow-3" style="width: 300rpx">时间：{{ takeCarInfo.RouteInfo.duration }}分钟</text>
+              </view>
+            </template>
+            <template #right>
+              <view></view>
+            </template>
+          </tm-cell>
+          <!--          <tm-cell :margin="[0, 0]" :titleFontSize="30">-->
+          <!--            <template #title>-->
+          <!--              <tm-text color="grey" label="东大街10号"></tm-text>-->
+          <!--            </template>-->
+          <!--            <template #right></template>-->
+          <!--          </tm-cell>-->
+        </view>
         <!--        起点-->
         <view>
           <tm-cell :margin="[0, 0]" :titleFontSize="30">
@@ -110,6 +146,27 @@
     <!--    开始服务 已录入车辆信息时显示-->
     <view v-if="takeCarInfo?.orderInfo.orderStatus === OrderStatus.UPDATE_CART_INFO" class="location-panel">
       <tm-sheet :round="3" :shadow="2">
+        <!--       距离时间 -->
+        <view>
+          <tm-cell :margin="[0, 0]" :titleFontSize="30">
+            <template #title>
+              <view class="flex flex-row flex-row-center-start">
+                <view style="height: 20rpx; width: 20rpx; background-color: #93da5f; border-radius: 50%"></view>
+                <text class="ml-20 text-overflow-3" style="width: 300rpx">距离：{{ takeCarInfo.RouteInfo.distance }}公里</text>
+                <text class="ml-20 text-overflow-3" style="width: 300rpx">时间：{{ takeCarInfo.RouteInfo.duration }}分钟</text>
+              </view>
+            </template>
+            <template #right>
+              <view></view>
+            </template>
+          </tm-cell>
+          <!--          <tm-cell :margin="[0, 0]" :titleFontSize="30">-->
+          <!--            <template #title>-->
+          <!--              <tm-text color="grey" label="东大街10号"></tm-text>-->
+          <!--            </template>-->
+          <!--            <template #right></template>-->
+          <!--          </tm-cell>-->
+        </view>
         <!--        起点-->
         <view>
           <tm-cell :margin="[0, 0]" :titleFontSize="30">
@@ -137,6 +194,27 @@
     <!--    终点  开始服务时显示-->
     <view v-if="takeCarInfo?.orderInfo.orderStatus === OrderStatus.START_SERVICE" class="location-panel">
       <tm-sheet :round="3" :shadow="2">
+        <!--       距离时间 -->
+        <view>
+          <tm-cell :margin="[0, 0]" :titleFontSize="30">
+            <template #title>
+              <view class="flex flex-row flex-row-center-start">
+                <view style="height: 20rpx; width: 20rpx; background-color: #93da5f; border-radius: 50%"></view>
+                <text class="ml-20 text-overflow-3" style="width: 300rpx">距离：{{ takeCarInfo.RouteInfo.distance }}公里</text>
+                <text class="ml-20 text-overflow-3" style="width: 300rpx">时间：{{ takeCarInfo.RouteInfo.duration }}分钟</text>
+              </view>
+            </template>
+            <template #right>
+              <view></view>
+            </template>
+          </tm-cell>
+          <!--          <tm-cell :margin="[0, 0]" :titleFontSize="30">-->
+          <!--            <template #title>-->
+          <!--              <tm-text color="grey" label="东大街10号"></tm-text>-->
+          <!--            </template>-->
+          <!--            <template #right></template>-->
+          <!--          </tm-cell>-->
+        </view>
         <!--        终点-->
         <view>
           <tm-cell :margin="[0, 0]" :titleFontSize="30">
