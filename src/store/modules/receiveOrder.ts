@@ -34,11 +34,11 @@ export const useReceiveOrder = defineStore({
         success: function (res) {
           console.log('开启接单服务----更新位置', res)
           updateDriverLocation({
-            // longitude: res.longitude,
-            // latitude: res.latitude
+            longitude: res.longitude,
+            latitude: res.latitude
             // todo 地址位置写死：昌平区政府
-            longitude: 116.23128,
-            latitude: 40.22077
+            // longitude: 116.23128,
+            // latitude: 40.22077
           })
         }
       })
